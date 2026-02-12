@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── BentoGrid filler styles ─────────────────────────────────── */
+/* Fillers are injected by the BentoGrid JS library — not in React's vDOM */
+
+.bentogrid .bento-filler {
+  border-radius: 16px;
+  transition: background 0.2s, border 0.2s;
+}
+
+[data-mode="edit"] .bento-filler {
+  background: rgba(0, 0, 0, 0.03);
+  border: 1.5px dashed rgba(0, 0, 0, 0.1);
+}
+
+[data-mode="preview"] .bento-filler {
+  background: rgba(0, 0, 0, 0.04);
+  border: none;
+}
+
+/* ── Card base ───────────────────────────────────────────────── */
+.bento-card {
+  transition: box-shadow 0.15s, transform 0.15s;
+}
+
+.bento-card.selected {
+  box-shadow: 0 0 0 2.5px #60a5fa, 0 0 0 5px rgba(96, 165, 250, 0.15);
+}
+
+/* ── Floating tray slide animation ──────────────────────────── */
+.floating-tray {
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+              opacity 0.2s ease;
+}
+
+.floating-tray.hidden {
+  transform: translateY(120%) translateX(-50%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.floating-tray.visible {
+  transform: translateY(0) translateX(-50%);
+  opacity: 1;
+  pointer-events: auto;
+}
