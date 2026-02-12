@@ -11,7 +11,8 @@
 }
 
 .bentogrid .bento-filler {
-  display: none !important;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 /* ── Dynamic add buttons (injected via DOM into empty grid cells) ── */

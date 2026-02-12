@@ -45,7 +45,7 @@ export default function BentoCard({ card, maxColumns, isSelected, isEditMode, on
       )}
 
       {/* Floating caption */}
-      <div className="absolute bottom-0 left-0 right-0 p-3">
+      <div className={`absolute bottom-0 left-0 right-0 p-3 ${isEditMode ? 'z-10' : ''}`}>
         {isEditMode ? (
           <input
             className="bg-transparent font-medium text-sm outline-none border-0 w-full placeholder:opacity-30"
@@ -58,10 +58,8 @@ export default function BentoCard({ card, maxColumns, isSelected, isEditMode, on
         ) : (
           title && (
             <span
-              className={`inline-block text-sm font-medium px-2.5 py-1 rounded-lg backdrop-blur-sm
-                ${imageUrl ? 'bg-black/30 text-white' : 'bg-black/6'}
-              `}
-              style={{ color: imageUrl ? undefined : textColor }}
+              className="inline-block text-sm font-medium px-2.5 py-1 rounded-full backdrop-blur-sm bg-white/90 shadow-sm"
+              style={{ color: textColor }}
             >
               {title}
             </span>
