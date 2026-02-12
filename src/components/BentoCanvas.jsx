@@ -8,7 +8,7 @@ export default function BentoCanvas({ state, dispatch, selectedCardId, onCardSel
   const { cards, mode, gridConfig } = state
   const containerRef = useRef(null)
 
-  useBentoGrid(containerRef, cards, gridConfig, mode)
+  const { effectiveCols } = useBentoGrid(containerRef, cards, gridConfig, mode)
 
   function handleAdd() {
     dispatch({ type: ADD_CARD })
@@ -35,6 +35,7 @@ export default function BentoCanvas({ state, dispatch, selectedCardId, onCardSel
             <BentoCard
               key={card.id}
               card={card}
+              maxColumns={effectiveCols}
               isSelected={selectedCardId === card.id}
               isEditMode={mode === 'edit'}
               onSelect={onCardSelect}

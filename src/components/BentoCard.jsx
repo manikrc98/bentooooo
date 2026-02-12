@@ -1,8 +1,9 @@
 import { useRef } from 'react'
 import { ImagePlus } from 'lucide-react'
 import { UPDATE_CARD_CONTENT } from '../store/cardStore.js'
+import { clampBento } from '../utils/bentoDimensions.js'
 
-export default function BentoCard({ card, isSelected, isEditMode, onSelect, dispatch }) {
+export default function BentoCard({ card, maxColumns, isSelected, isEditMode, onSelect, dispatch }) {
   const { id, bento, content } = card
   const { imageUrl, title, bgColor, textColor, linkUrl } = content
   const fileInputRef = useRef(null)
@@ -25,9 +26,9 @@ export default function BentoCard({ card, isSelected, isEditMode, onSelect, disp
 
   return (
     <Tag
-      data-bento={bento}
+      data-bento={clampBento(bento, maxColumns)}
       {...linkProps}
-      className={`bento-card relative rounded-2xl overflow-hidden cursor-pointer select-none
+      className={`bento-card block relative rounded-2xl overflow-hidden cursor-pointer select-none
         ${isSelected ? 'selected' : ''}
       `}
       style={{
@@ -47,7 +48,7 @@ export default function BentoCard({ card, isSelected, isEditMode, onSelect, disp
       <div className="absolute bottom-0 left-0 right-0 p-3">
         {isEditMode ? (
           <input
-            className="bg-transparent font-medium text-sm outline-none w-full placeholder:opacity-30"
+            className="bg-transparent font-medium text-sm outline-none border-0 w-full placeholder:opacity-30"
             style={{ color: imageUrl ? '#ffffff' : textColor }}
             placeholder="Caption…"
             value={title}
