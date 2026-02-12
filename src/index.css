@@ -10,14 +10,41 @@
   transition: background 0.2s, border 0.2s;
 }
 
-[data-mode="edit"] .bento-filler {
-  background: rgba(0, 0, 0, 0.03);
-  border: 1.5px dashed rgba(0, 0, 0, 0.1);
+.bentogrid .bento-filler {
+  display: none !important;
 }
 
-[data-mode="preview"] .bento-filler {
-  background: rgba(0, 0, 0, 0.04);
-  border: none;
+/* ── Dynamic add buttons (injected via DOM into empty grid cells) ── */
+.dynamic-add-btn {
+  border-radius: 16px;
+  outline: 2px dashed #e4e4e7;
+  outline-offset: -2px;
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+  transition: all 150ms;
+}
+
+.dynamic-add-btn:hover {
+  outline-color: #d4d4d8;
+  background: rgba(244, 244, 245, 0.6);
+}
+
+.dynamic-add-btn:active {
+  transform: scale(0.95);
+}
+
+.dynamic-add-btn svg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #d4d4d8;
+  transition: color 150ms;
+}
+
+.dynamic-add-btn:hover svg {
+  color: #71717a;
 }
 
 /* ── Card base ───────────────────────────────────────────────── */

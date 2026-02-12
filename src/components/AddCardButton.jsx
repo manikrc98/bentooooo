@@ -3,11 +3,12 @@ import { Plus } from 'lucide-react'
 export default function AddCardButton({ onAdd, isHidden }) {
   if (isHidden) {
     // Keep data-bento so BentoGrid still reserves the slot — just invisible
-    return <div data-bento="1x1" aria-hidden="true" />
+    return <div data-bento="1x1" data-add-btn aria-hidden="true" />
   }
   return (
     <div
       data-bento="1x1"
+      data-add-btn
       className="bento-card relative rounded-2xl
         outline-2 outline-dashed outline-zinc-200 -outline-offset-2 cursor-pointer
         hover:outline-zinc-300 hover:bg-zinc-100/60

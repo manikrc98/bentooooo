@@ -1,18 +1,17 @@
-import { useRef } from 'react'
+import { useCallback, useRef } from 'react'
 import { useBentoGrid } from '../hooks/useBentoGrid.js'
 import { ADD_CARD, REMOVE_CARD } from '../store/cardStore.js'
 import BentoCard from './BentoCard.jsx'
-import AddCardButton from './AddCardButton.jsx'
 
 export default function BentoCanvas({ state, dispatch, selectedCardId, onCardSelect }) {
   const { cards, mode, gridConfig } = state
   const containerRef = useRef(null)
 
-  const { effectiveCols } = useBentoGrid(containerRef, cards, gridConfig, mode)
-
-  function handleAdd() {
+  const handleAdd = useCallback(() => {
     dispatch({ type: ADD_CARD })
-  }
+  }, [dispatch])
+
+  const { effectiveCols } = useBentoGrid(containerRef, cards, gridConfig, mode, handleAdd)
 
   function handleRemove(id) {
     dispatch({ type: REMOVE_CARD, payload: id })
@@ -43,7 +42,6 @@ export default function BentoCanvas({ state, dispatch, selectedCardId, onCardSel
               dispatch={dispatch}
             />
           ))}
-          <AddCardButton onAdd={handleAdd} isHidden={mode !== 'edit'} />
         </div>
       )}
     </div>
