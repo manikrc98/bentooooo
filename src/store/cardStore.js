@@ -9,6 +9,7 @@ export const UPDATE_CARD_CONTENT = 'UPDATE_CARD_CONTENT'
 export const SAVE = 'SAVE'
 export const LOAD_STATE = 'LOAD_STATE'
 export const SET_GRID_CONFIG = 'SET_GRID_CONFIG'
+export const REORDER_CARDS = 'REORDER_CARDS'
 
 // ── Default card content ─────────────────────────────────────────────────────
 const COLORS = ['#fde2e4', '#d3e4cd', '#dde1f8', '#fce8c3', '#c9e8f5', '#f5e6d3']
@@ -17,9 +18,9 @@ function nextColor() {
   return COLORS[colorIndex++ % COLORS.length]
 }
 
-function makeCard(bento = '1x1') {
+function makeCard(bento = '1x1', id) {
   return {
-    id: `card-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    id: id || `card-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     bento,
     content: {
       imageUrl: '',
@@ -62,12 +63,15 @@ export function reducer(state, action) {
     case DESELECT_CARD:
       return { ...state, selectedCardId: null }
 
-    case ADD_CARD:
+    case ADD_CARD: {
+      const newCard = makeCard('1x1', action.payload?.id)
       return {
         ...state,
-        cards: [...state.cards, makeCard('1x1')],
+        cards: [...state.cards, newCard],
+        selectedCardId: newCard.id,
         isDirty: true,
       }
+    }
 
     case REMOVE_CARD:
       return {
@@ -115,6 +119,15 @@ export function reducer(state, action) {
         gridConfig: { ...state.gridConfig, ...action.payload },
         isDirty: true,
       }
+
+    case REORDER_CARDS: {
+      const { fromIndex, toIndex } = action.payload
+      if (fromIndex === toIndex) return state
+      const next = [...state.cards]
+      const [moved] = next.splice(fromIndex, 1)
+      next.splice(toIndex, 0, moved)
+      return { ...state, cards: next, isDirty: true }
+    }
 
     default:
       return state
