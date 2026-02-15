@@ -10,6 +10,10 @@ export const SAVE = 'SAVE'
 export const LOAD_STATE = 'LOAD_STATE'
 export const SET_GRID_CONFIG = 'SET_GRID_CONFIG'
 export const REORDER_CARDS = 'REORDER_CARDS'
+export const ADD_SECTION = 'ADD_SECTION'
+export const REMOVE_SECTION = 'REMOVE_SECTION'
+export const UPDATE_SECTION_TITLE = 'UPDATE_SECTION_TITLE'
+export const MOVE_CARD_TO_SECTION = 'MOVE_CARD_TO_SECTION'
 
 // ── Default card content ─────────────────────────────────────────────────────
 const COLORS = ['#fde2e4', '#d3e4cd', '#dde1f8', '#fce8c3', '#c9e8f5', '#f5e6d3']
@@ -32,6 +36,14 @@ function makeCard(bento = '1x1', id) {
   }
 }
 
+function makeSection(title = 'Untitled Section') {
+  return {
+    id: `section-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    title,
+    cards: [],
+  }
+}
+
 // ── Initial State ─────────────────────────────────────────────────────────────
 export const initialState = {
   mode: 'edit',
@@ -42,7 +54,7 @@ export const initialState = {
     cellGap: 8,
     aspectRatio: 1,
   },
-  cards: [],
+  sections: [makeSection('Section 1')],
   lastSaved: null,
 }
 
@@ -54,7 +66,7 @@ export function reducer(state, action) {
       return {
         ...state,
         mode: action.payload,
-        selectedCardId: null, // deselect on mode switch
+        selectedCardId: null,
       }
 
     case SELECT_CARD:
@@ -64,54 +76,74 @@ export function reducer(state, action) {
       return { ...state, selectedCardId: null }
 
     case ADD_CARD: {
-      const newCard = makeCard('1x1', action.payload?.id)
+      const { sectionId, id } = action.payload
+      const newCard = makeCard('1x1', id)
       return {
         ...state,
-        cards: [...state.cards, newCard],
+        sections: state.sections.map(s =>
+          s.id === sectionId ? { ...s, cards: [...s.cards, newCard] } : s
+        ),
         selectedCardId: newCard.id,
         isDirty: true,
       }
     }
 
-    case REMOVE_CARD:
+    case REMOVE_CARD: {
+      const cardId = action.payload
       return {
         ...state,
-        cards: state.cards.filter(c => c.id !== action.payload),
-        selectedCardId: state.selectedCardId === action.payload ? null : state.selectedCardId,
+        sections: state.sections.map(s => ({
+          ...s,
+          cards: s.cards.filter(c => c.id !== cardId),
+        })),
+        selectedCardId: state.selectedCardId === cardId ? null : state.selectedCardId,
         isDirty: true,
       }
+    }
 
     case RESIZE_CARD:
       return {
         ...state,
-        cards: state.cards.map(c =>
-          c.id === action.payload.id ? { ...c, bento: action.payload.bento } : c
-        ),
+        sections: state.sections.map(s => ({
+          ...s,
+          cards: s.cards.map(c =>
+            c.id === action.payload.id ? { ...c, bento: action.payload.bento } : c
+          ),
+        })),
         isDirty: true,
       }
 
     case UPDATE_CARD_CONTENT:
       return {
         ...state,
-        cards: state.cards.map(c =>
-          c.id === action.payload.id
-            ? { ...c, content: { ...c.content, ...action.payload.updates } }
-            : c
-        ),
+        sections: state.sections.map(s => ({
+          ...s,
+          cards: s.cards.map(c =>
+            c.id === action.payload.id
+              ? { ...c, content: { ...c.content, ...action.payload.updates } }
+              : c
+          ),
+        })),
         isDirty: true,
       }
 
     case SAVE:
       return { ...state, isDirty: false, lastSaved: new Date().toISOString() }
 
-    case LOAD_STATE:
+    case LOAD_STATE: {
+      // Support legacy flat cards array by wrapping in a single section
+      let sections = action.payload.sections
+      if (!sections && action.payload.cards) {
+        sections = [{ id: 'section-legacy', title: 'Section 1', cards: action.payload.cards }]
+      }
       return {
         ...state,
-        cards: action.payload.cards ?? state.cards,
+        sections: sections ?? state.sections,
         gridConfig: action.payload.gridConfig ?? state.gridConfig,
         isDirty: false,
         lastSaved: action.payload.savedAt ?? null,
       }
+    }
 
     case SET_GRID_CONFIG:
       return {
@@ -121,13 +153,75 @@ export function reducer(state, action) {
       }
 
     case REORDER_CARDS: {
-      const { fromIndex, toIndex } = action.payload
+      const { sectionId, fromIndex, toIndex } = action.payload
       if (fromIndex === toIndex) return state
-      const next = [...state.cards]
-      const [moved] = next.splice(fromIndex, 1)
-      next.splice(toIndex, 0, moved)
-      return { ...state, cards: next, isDirty: true }
+      return {
+        ...state,
+        sections: state.sections.map(s => {
+          if (s.id !== sectionId) return s
+          const next = [...s.cards]
+          const [moved] = next.splice(fromIndex, 1)
+          next.splice(toIndex, 0, moved)
+          return { ...s, cards: next }
+        }),
+        isDirty: true,
+      }
     }
+
+    case ADD_SECTION: {
+      const newSection = makeSection(action.payload?.title || 'Untitled Section')
+      return {
+        ...state,
+        sections: [...state.sections, newSection],
+        isDirty: true,
+      }
+    }
+
+    case REMOVE_SECTION: {
+      const sectionId = action.payload
+      // Check if any card in this section is selected
+      const section = state.sections.find(s => s.id === sectionId)
+      const selectedInSection = section?.cards.some(c => c.id === state.selectedCardId)
+      return {
+        ...state,
+        sections: state.sections.filter(s => s.id !== sectionId),
+        selectedCardId: selectedInSection ? null : state.selectedCardId,
+        isDirty: true,
+      }
+    }
+
+    case MOVE_CARD_TO_SECTION: {
+      const { cardId, fromSectionId, toSectionId, toIndex } = action.payload
+      if (fromSectionId === toSectionId) return state
+      const fromSection = state.sections.find(s => s.id === fromSectionId)
+      const card = fromSection?.cards.find(c => c.id === cardId)
+      if (!card) return state
+      return {
+        ...state,
+        sections: state.sections.map(s => {
+          if (s.id === fromSectionId) {
+            return { ...s, cards: s.cards.filter(c => c.id !== cardId) }
+          }
+          if (s.id === toSectionId) {
+            const next = [...s.cards]
+            const insertAt = toIndex != null ? toIndex : next.length
+            next.splice(insertAt, 0, card)
+            return { ...s, cards: next }
+          }
+          return s
+        }),
+        isDirty: true,
+      }
+    }
+
+    case UPDATE_SECTION_TITLE:
+      return {
+        ...state,
+        sections: state.sections.map(s =>
+          s.id === action.payload.id ? { ...s, title: action.payload.title } : s
+        ),
+        isDirty: true,
+      }
 
     default:
       return state

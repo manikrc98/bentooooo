@@ -97,8 +97,18 @@ export function useBentoGrid(containerRef, cards, gridConfig, mode, onAddCard) {
         maxRowEnd = Math.max(maxRowEnd, rowStart + rowSpan - 1)
       })
 
-      // Include one extra row below existing content for adding new cards
-      const totalRows = Math.max(maxRowEnd + 1, 1)
+      // Only add an extra row when there are empty cells to fill on the last row
+      const lastRowOccupied = (() => {
+        if (maxRowEnd === 0) return 0
+        let count = 0
+        for (let c = 1; c <= cols; c++) {
+          if (occupied.has(`${maxRowEnd},${c}`)) count++
+        }
+        return count
+      })()
+      const totalRows = (lastRowOccupied < cols) ? maxRowEnd : maxRowEnd + 1
+      // Always at least 1 row for empty sections
+      const effectiveTotalRows = Math.max(totalRows, 1)
 
       // Check if there's any card ahead of position (r, c) in the same row or next row
       function hasCardAhead(r, c) {
@@ -115,7 +125,7 @@ export function useBentoGrid(containerRef, cards, gridConfig, mode, onAddCard) {
 
       // Create add buttons — but limit to one trailing button when no cards are ahead
       let trailingAddPlaced = false
-      for (let r = 1; r <= totalRows; r++) {
+      for (let r = 1; r <= effectiveTotalRows; r++) {
         for (let c = 1; c <= cols; c++) {
           if (!occupied.has(`${r},${c}`)) {
             if (hasCardAhead(r, c) || !trailingAddPlaced) {
@@ -135,8 +145,8 @@ export function useBentoGrid(containerRef, cards, gridConfig, mode, onAddCard) {
 
       // Extend grid rows so all button rows have proper height
       const currentRows = parseInt(container.style.gridTemplateRows?.match(/repeat\((\d+)/)?.[1]) || 0
-      if (totalRows > currentRows) {
-        container.style.gridTemplateRows = `repeat(${totalRows}, minmax(var(--bento-row-height), 1fr))`
+      if (effectiveTotalRows > currentRows) {
+        container.style.gridTemplateRows = `repeat(${effectiveTotalRows}, minmax(var(--bento-row-height), 1fr))`
       }
     }
 

@@ -21,17 +21,18 @@ export function usePersistence(state, dispatch) {
 
   const save = useCallback(() => {
     const payload = {
-      cards: state.cards,
+      sections: state.sections,
       gridConfig: state.gridConfig,
       savedAt: new Date().toISOString(),
     }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(payload))
     dispatch({ type: SAVE })
-  }, [state.cards, state.gridConfig, dispatch])
+  }, [state.sections, state.gridConfig, dispatch])
 
   const exportHTML = useCallback(() => {
-    downloadHTML(state.cards, state.gridConfig)
-  }, [state.cards, state.gridConfig])
+    const allCards = state.sections.flatMap(s => s.cards)
+    downloadHTML(allCards, state.gridConfig)
+  }, [state.sections, state.gridConfig])
 
   return { save, exportHTML }
 }

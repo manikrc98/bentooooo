@@ -8,12 +8,15 @@ import FloatingTray from './components/FloatingTray.jsx'
 
 export default function App() {
   const [state, dispatch] = useReducer(reducer, initialState)
-  const { mode, cards, selectedCardId, isDirty } = state
+  const { mode, sections, selectedCardId, isDirty } = state
 
   const { handleSelect } = useCardSelection(dispatch, mode)
   const { save, exportHTML } = usePersistence(state, dispatch)
 
-  const selectedCard = cards.find(c => c.id === selectedCardId) ?? null
+  // Find selected card across all sections
+  const selectedCard = selectedCardId
+    ? sections.flatMap(s => s.cards).find(c => c.id === selectedCardId) ?? null
+    : null
 
   function handleResize(id, bento) {
     dispatch({ type: RESIZE_CARD, payload: { id, bento } })
