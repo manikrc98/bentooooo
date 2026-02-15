@@ -5,10 +5,11 @@ import { usePersistence } from './hooks/usePersistence.js'
 import TopBar from './components/TopBar.jsx'
 import BentoCanvas from './components/BentoCanvas.jsx'
 import FloatingTray from './components/FloatingTray.jsx'
+import BioSection from './components/BioSection.jsx'
 
 export default function App() {
   const [state, dispatch] = useReducer(reducer, initialState)
-  const { mode, sections, selectedCardId, isDirty } = state
+  const { mode, sections, selectedCardId, isDirty, bio } = state
 
   const { handleSelect } = useCardSelection(dispatch, mode)
   const { save, exportHTML } = usePersistence(state, dispatch)
@@ -36,12 +37,16 @@ export default function App() {
         dispatch={dispatch}
       />
 
-      <BentoCanvas
-        state={state}
-        dispatch={dispatch}
-        selectedCardId={selectedCardId}
-        onCardSelect={handleSelect}
-      />
+      <div className="flex-1 flex min-h-0 overflow-y-auto px-6 py-6 relative">
+        <BioSection bio={bio} mode={mode} dispatch={dispatch} />
+
+        <BentoCanvas
+          state={state}
+          dispatch={dispatch}
+          selectedCardId={selectedCardId}
+          onCardSelect={handleSelect}
+        />
+      </div>
 
       <FloatingTray
         selectedCard={mode === 'edit' ? selectedCard : null}

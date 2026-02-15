@@ -90,3 +90,8 @@
 .animate-modal-in {
   animation: modal-in 0.15s ease-out;
 }
+
+/* ── Bio sidebar ─────────────────────────────────────────────── */
+.bio-sidebar {
+  margin-right: 24px;
+}

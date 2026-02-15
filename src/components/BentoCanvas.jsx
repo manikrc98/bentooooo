@@ -31,7 +31,7 @@ export default function BentoCanvas({ state, dispatch, selectedCardId, onCardSel
   const deletingSection = sections.find(s => s.id === deletingSectionId)
 
   return (
-    <div className="flex-1 overflow-y-auto px-6 py-6">
+    <div className="flex-1 min-w-0">
       {sections.length === 0 && mode === 'preview' ? (
         <div className="flex flex-col items-center justify-center h-64 text-zinc-300 text-sm gap-2">
           <span className="text-4xl">⬜</span>

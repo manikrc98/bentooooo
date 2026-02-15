@@ -14,6 +14,8 @@ export const ADD_SECTION = 'ADD_SECTION'
 export const REMOVE_SECTION = 'REMOVE_SECTION'
 export const UPDATE_SECTION_TITLE = 'UPDATE_SECTION_TITLE'
 export const MOVE_CARD_TO_SECTION = 'MOVE_CARD_TO_SECTION'
+export const SET_BIO = 'SET_BIO'
+export const CLEAR_BIO = 'CLEAR_BIO'
 
 // ── Default card content ─────────────────────────────────────────────────────
 const COLORS = ['#fde2e4', '#d3e4cd', '#dde1f8', '#fce8c3', '#c9e8f5', '#f5e6d3']
@@ -55,6 +57,7 @@ export const initialState = {
     aspectRatio: 1,
   },
   sections: [makeSection('Section 1')],
+  bio: null, // { avatar: '', name: '', description: '', blocks: [{ id, heading, body }] }
   lastSaved: null,
 }
 
@@ -139,6 +142,7 @@ export function reducer(state, action) {
       return {
         ...state,
         sections: sections ?? state.sections,
+        bio: action.payload.bio ?? state.bio,
         gridConfig: action.payload.gridConfig ?? state.gridConfig,
         isDirty: false,
         lastSaved: action.payload.savedAt ?? null,
@@ -220,6 +224,20 @@ export function reducer(state, action) {
         sections: state.sections.map(s =>
           s.id === action.payload.id ? { ...s, title: action.payload.title } : s
         ),
+        isDirty: true,
+      }
+
+    case SET_BIO:
+      return {
+        ...state,
+        bio: { ...state.bio, ...action.payload },
+        isDirty: true,
+      }
+
+    case CLEAR_BIO:
+      return {
+        ...state,
+        bio: null,
         isDirty: true,
       }
 
