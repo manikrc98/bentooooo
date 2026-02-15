@@ -16,6 +16,7 @@ export const UPDATE_SECTION_TITLE = 'UPDATE_SECTION_TITLE'
 export const MOVE_CARD_TO_SECTION = 'MOVE_CARD_TO_SECTION'
 export const SET_BIO = 'SET_BIO'
 export const CLEAR_BIO = 'CLEAR_BIO'
+export const RESET_STATE = 'RESET_STATE'
 
 // ── Default card content ─────────────────────────────────────────────────────
 const COLORS = ['#fde2e4', '#d3e4cd', '#dde1f8', '#fce8c3', '#c9e8f5', '#f5e6d3']
@@ -238,6 +239,15 @@ export function reducer(state, action) {
       return {
         ...state,
         bio: null,
+        isDirty: true,
+      }
+
+    case RESET_STATE:
+      return {
+        ...state,
+        sections: [],
+        bio: null,
+        selectedCardId: null,
         isDirty: true,
       }
 

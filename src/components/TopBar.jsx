@@ -1,7 +1,7 @@
-import { Download, Save, LayoutGrid } from 'lucide-react'
+import { Save, LayoutGrid, RotateCcw } from 'lucide-react'
 import { SET_MODE } from '../store/cardStore.js'
 
-export default function TopBar({ mode, isDirty, onSave, onExport, dispatch }) {
+export default function TopBar({ mode, isDirty, onSave, onReset, dispatch }) {
   return (
     <header className="flex items-center justify-between px-6 py-3 border-b border-zinc-200 bg-white/80 backdrop-blur-md shrink-0">
       {/* Logo */}
@@ -41,13 +41,13 @@ export default function TopBar({ mode, isDirty, onSave, onExport, dispatch }) {
       {/* Actions */}
       <div className="flex items-center gap-2">
         <button
-          onClick={onExport}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-zinc-400 hover:text-zinc-600
-            hover:bg-zinc-100 text-xs font-medium transition-all"
-          title="Export as HTML"
+          onClick={onReset}
+          className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-medium transition-all
+            bg-zinc-100 text-zinc-500 hover:bg-red-50 hover:text-red-500"
+          title="Reset to default"
         >
-          <Download size={14} />
-          Export
+          <RotateCcw size={13} />
+          Reset
         </button>
         <button
           onClick={onSave}

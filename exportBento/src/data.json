@@ -1,0 +1,50 @@
+{
+  "sections": [
+    {
+      "id": "section-1771179291015-twum0",
+      "title": "Untitled Section",
+      "cards": [
+        {
+          "id": "card-1771179291665-gliu6",
+          "bento": "1x1",
+          "content": {
+            "imageUrl": "/assets/img-1771179303272.png",
+            "title": "",
+            "bgColor": "#d3e4cd",
+            "textColor": "#374151",
+            "linkUrl": ""
+          }
+        },
+        {
+          "id": "card-1771179295681-vvte5",
+          "bento": "1x1",
+          "content": {
+            "imageUrl": "/assets/img-1771179303273.png",
+            "title": "",
+            "bgColor": "#fce8c3",
+            "textColor": "#374151",
+            "linkUrl": ""
+          }
+        }
+      ]
+    }
+  ],
+  "bio": {
+    "avatar": "/assets/img-1771179303274.png",
+    "name": "",
+    "description": "",
+    "blocks": [
+      {
+        "id": "block-1771179298815-xkvmr",
+        "heading": "",
+        "body": ""
+      }
+    ]
+  },
+  "gridConfig": {
+    "columns": 4,
+    "cellGap": 8,
+    "aspectRatio": 1
+  },
+  "savedAt": "2026-02-15T18:15:03.276Z"
+}
