@@ -37,7 +37,7 @@ export default function App({ profileData, isOwner, username, profileUserId }) {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50 text-zinc-800 overflow-hidden">
+    <div className="relative flex flex-col h-screen bg-gray-50 text-zinc-800 overflow-hidden">
       <TopBar
         mode={effectiveMode}
         isDirty={isDirty}
