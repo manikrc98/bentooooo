@@ -5,6 +5,17 @@
       "title": "Untitled Section",
       "cards": [
         {
+          "id": "card-1771210674647-8130i",
+          "bento": "1x1",
+          "content": {
+            "imageUrl": "",
+            "title": "",
+            "bgColor": "#d3e4cd",
+            "textColor": "#374151",
+            "linkUrl": ""
+          }
+        },
+        {
           "id": "card-1771210537586-8xuxq",
           "bento": "1x2",
           "content": {
@@ -25,6 +36,28 @@
             "textColor": "#374151",
             "linkUrl": ""
           }
+        },
+        {
+          "id": "card-1771210677563-vjp24",
+          "bento": "1x1",
+          "content": {
+            "imageUrl": "",
+            "title": "",
+            "bgColor": "#f5e6d3",
+            "textColor": "#374151",
+            "linkUrl": ""
+          }
+        },
+        {
+          "id": "card-1771210676330-mun3y",
+          "bento": "2x1",
+          "content": {
+            "imageUrl": "",
+            "title": "",
+            "bgColor": "#fce8c3",
+            "textColor": "#374151",
+            "linkUrl": ""
+          }
         }
       ]
     }
@@ -35,5 +68,5 @@
     "cellGap": 8,
     "aspectRatio": 1
   },
-  "savedAt": "2026-02-16T02:55:41.076Z"
+  "savedAt": "2026-02-16T02:58:00.001Z"
 }

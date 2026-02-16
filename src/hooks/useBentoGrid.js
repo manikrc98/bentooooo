@@ -99,11 +99,11 @@ export function useBentoGrid(containerRef, cards, gridConfig, mode, onAddCard) {
 
       const cols = colsRef.current
 
-      // Ensure grid template columns are defined (BentoGrid may not set them for 0 items)
-      if (!container.style.gridTemplateColumns) {
-        container.style.gridTemplateColumns = `repeat(${cols}, 1fr)`
-        container.style.gap = `${gridConfig.cellGap}px`
-      }
+      // Always set grid template columns to match the responsive column count.
+      // BentoGrid's setupGrid() produces invalid CSS when `columns` is specified,
+      // so we must ensure the correct value is applied.
+      container.style.gridTemplateColumns = `repeat(${cols}, 1fr)`
+      container.style.gap = `${gridConfig.cellGap}px`
 
       const items = container.querySelectorAll(':scope > [data-bento]')
       const occupied = new Set()
@@ -244,6 +244,12 @@ export function useBentoGrid(containerRef, cards, gridConfig, mode, onAddCard) {
       cellGap: gridConfig.cellGap,
       aspectRatio: gridConfig.aspectRatio,
     })
+
+    // BentoGrid generates invalid CSS for gridTemplateColumns when `columns`
+    // is specified (it deletes minCellWidth internally but still references it
+    // in the template string, producing "minmax(undefinedpx, 1fr)").
+    // Override with a correct value so the grid always has the right column count.
+    container.style.gridTemplateColumns = `repeat(${effectiveCols}, 1fr)`
 
     // Handle 0-card case where BentoGrid may not fire calculationDone
     if (cards.length === 0 && mode === 'edit') {
