@@ -4,8 +4,9 @@ import { loadProfileByUsername } from '../lib/supabaseQueries.js'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import App from '../App.jsx'
 
-export default function ProfilePage() {
-  const { username } = useParams()
+export default function ProfilePage({ defaultUsername }) {
+  const { username: paramUsername } = useParams()
+  const username = paramUsername || defaultUsername
   const { user, profile, loading: authLoading } = useAuth()
   const [profileData, setProfileData] = useState(null)
   const [profileUserId, setProfileUserId] = useState(null)

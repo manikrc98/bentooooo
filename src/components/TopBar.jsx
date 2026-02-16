@@ -1,7 +1,7 @@
-import { Save, LayoutGrid, RotateCcw, LogIn, LogOut } from 'lucide-react'
+import { Save, LayoutGrid, RotateCcw, LogIn, LogOut, X } from 'lucide-react'
 import { SET_MODE } from '../store/cardStore.js'
 
-export default function TopBar({ mode, isDirty, onSave, onReset, dispatch, isOwner, user, onSignIn, onSignOut, username }) {
+export default function TopBar({ mode, isDirty, onSave, onReset, dispatch, isOwner, user, onSignIn, onSignOut, username, authError, onClearAuthError }) {
   return (
     <header className="flex items-center justify-between px-6 py-3 border-b border-zinc-200 bg-white/80 backdrop-blur-md shrink-0">
       {/* Logo + username */}
@@ -103,6 +103,15 @@ export default function TopBar({ mode, isDirty, onSave, onReset, dispatch, isOwn
             <LogIn size={13} />
             Sign in
           </button>
+        )}
+
+        {authError && (
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs font-medium">
+            <span>{authError}</span>
+            <button onClick={onClearAuthError} className="hover:text-red-800 transition-colors">
+              <X size={13} />
+            </button>
+          </div>
         )}
       </div>
     </header>

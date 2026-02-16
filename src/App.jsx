@@ -14,7 +14,7 @@ export default function App({ profileData, isOwner, username, profileUserId }) {
   const { mode, sections, selectedCardId, isDirty, bio } = state
   const [showResetModal, setShowResetModal] = useState(false)
 
-  const { user, signInWithGoogle, signOut } = useAuth()
+  const { user, signInWithGoogle, signOut, authError, clearAuthError } = useAuth()
 
   // Non-owners always see preview mode
   const effectiveMode = isOwner ? mode : 'preview'
@@ -49,6 +49,8 @@ export default function App({ profileData, isOwner, username, profileUserId }) {
         onSignIn={signInWithGoogle}
         onSignOut={signOut}
         username={username}
+        authError={authError}
+        onClearAuthError={clearAuthError}
       />
 
       {showResetModal && (

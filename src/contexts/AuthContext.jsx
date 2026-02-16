@@ -3,10 +3,13 @@ import { supabase } from '../lib/supabase.js'
 
 const AuthContext = createContext(null)
 
+const OWNER_EMAIL = 'manikrc98@gmail.com'
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [authError, setAuthError] = useState(null)
 
   async function fetchProfile(userId) {
     const { data } = await supabase
@@ -17,12 +20,25 @@ export function AuthProvider({ children }) {
     setProfile(data)
   }
 
+  async function handleAuthUser(sessionUser) {
+    if (sessionUser.email !== OWNER_EMAIL) {
+      await supabase.auth.signOut()
+      setUser(null)
+      setProfile(null)
+      setAuthError('Access denied. Only the portfolio owner can sign in.')
+      return false
+    }
+    setUser(sessionUser)
+    setAuthError(null)
+    await fetchProfile(sessionUser.id)
+    return true
+  }
+
   useEffect(() => {
     // Check initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session?.user) {
-        fetchProfile(session.user.id)
+        await handleAuthUser(session.user)
       }
       setLoading(false)
     })
@@ -30,10 +46,10 @@ export function AuthProvider({ children }) {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
-        setUser(session?.user ?? null)
         if (session?.user) {
-          await fetchProfile(session.user.id)
+          await handleAuthUser(session.user)
         } else {
+          setUser(null)
           setProfile(null)
         }
       }
@@ -59,8 +75,12 @@ export function AuthProvider({ children }) {
     setProfile(null)
   }
 
+  function clearAuthError() {
+    setAuthError(null)
+  }
+
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signInWithGoogle, signOut }}>
+    <AuthContext.Provider value={{ user, profile, loading, signInWithGoogle, signOut, authError, clearAuthError }}>
       {children}
     </AuthContext.Provider>
   )
