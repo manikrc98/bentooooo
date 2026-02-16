@@ -5,7 +5,7 @@ import { compressImage } from '../utils/imageCompression.js'
 
 function makeBioBlock() {
   return {
-    id: `block-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    id: crypto.randomUUID(),
     heading: '',
     body: '',
   }

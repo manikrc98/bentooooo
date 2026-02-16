@@ -1,5 +1,6 @@
 import { useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase.js'
+import { saveProfile } from '../lib/supabaseQueries.js'
 import { LOAD_STATE, SAVE } from '../store/cardStore.js'
 
 /** Collect all blob URLs from state (cards + bio avatar) */
@@ -28,8 +29,9 @@ async function uploadBlob(blobUrl, userId) {
   const blob = await res.blob()
   const ext = blob.type.split('/')[1]?.split(';')[0] || 'bin'
   const isVideo = blob.type.startsWith('video/')
+  const folder = isVideo ? 'videos' : 'images'
   const prefix = isVideo ? 'vid' : 'img'
-  const fileName = `${userId}/${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${ext}`
+  const fileName = `${userId}/${folder}/${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${ext}`
 
   const { error } = await supabase.storage
     .from('bento-assets')
@@ -74,26 +76,21 @@ export function usePersistence(state, dispatch, profileData, profileUserId) {
         urlMap[url] = await uploadBlob(url, profileUserId)
       }
 
-      // Build config with public URLs
-      const config = {
+      // Build state snapshot with public URLs
+      const stateSnapshot = {
         sections: state.sections,
         bio: state.bio,
         gridConfig: state.gridConfig,
       }
-      const finalConfig = Object.keys(urlMap).length > 0
-        ? replaceUrls(config, urlMap)
-        : config
+      const finalState = Object.keys(urlMap).length > 0
+        ? replaceUrls(stateSnapshot, urlMap)
+        : stateSnapshot
 
-      // Write config to profiles table
-      const { error } = await supabase
-        .from('profiles')
-        .update({ config: finalConfig, updated_at: new Date().toISOString() })
-        .eq('id', profileUserId)
-
-      if (error) throw error
+      // Save to relational tables
+      await saveProfile(profileUserId, finalState)
 
       // Reload state with public URLs so editor shows them
-      dispatch({ type: LOAD_STATE, payload: finalConfig })
+      dispatch({ type: LOAD_STATE, payload: finalState })
       dispatch({ type: SAVE })
     } catch (err) {
       console.error('Publish failed:', err)

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { supabase } from '../lib/supabase.js'
+import { loadProfileByUsername } from '../lib/supabaseQueries.js'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import App from '../App.jsx'
 
@@ -15,17 +15,13 @@ export default function ProfilePage() {
   useEffect(() => {
     async function loadProfile() {
       setLoading(true)
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('username', username)
-        .single()
+      const { profile: p, profileData: data } = await loadProfileByUsername(username)
 
-      if (error || !data) {
+      if (!p) {
         setNotFound(true)
       } else {
-        setProfileData(data.config)
-        setProfileUserId(data.id)
+        setProfileData(data)
+        setProfileUserId(p.id)
       }
       setLoading(false)
     }

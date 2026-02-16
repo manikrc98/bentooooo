@@ -27,7 +27,7 @@ function nextColor() {
 
 function makeCard(bento = '1x1', id, type = 'image') {
   return {
-    id: id || `card-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    id: id || crypto.randomUUID(),
     bento,
     content: {
       type,          // 'image' | 'video' | 'text'
@@ -44,7 +44,7 @@ function makeCard(bento = '1x1', id, type = 'image') {
 
 function makeSection(title = 'Untitled Section') {
   return {
-    id: `section-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    id: crypto.randomUUID(),
     title,
     cards: [],
   }
