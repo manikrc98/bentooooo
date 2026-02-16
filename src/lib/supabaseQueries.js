@@ -96,7 +96,7 @@ export async function saveProfile(profileUserId, state) {
       updated_at: new Date().toISOString(),
     })
     .eq('id', profileUserId)
-  if (profileError) throw profileError
+  if (profileError) throw new Error(`[profiles.update] ${profileError.message}`)
 
   // 2. Fetch current DB state for diffing
   const [currentSectionsRes, currentBioRes] = await Promise.all([
@@ -111,7 +111,7 @@ export async function saveProfile(profileUserId, state) {
   const sectionsToDelete = [...currentSectionIds].filter(id => !stateSectionIds.has(id))
   if (sectionsToDelete.length > 0) {
     const { error: delSecErr } = await supabase.from('sections').delete().in('id', sectionsToDelete)
-    if (delSecErr) throw delSecErr
+    if (delSecErr) throw new Error(`[sections.delete] ${delSecErr.message}`)
   }
 
   // 4. Upsert sections
@@ -124,7 +124,7 @@ export async function saveProfile(profileUserId, state) {
       updated_at: new Date().toISOString(),
     }))
     const { error } = await supabase.from('sections').upsert(sectionRows, { onConflict: 'id' })
-    if (error) throw error
+    if (error) throw new Error(`[sections.upsert] ${error.message}`)
   }
 
   // 5. Diff cards within surviving sections
@@ -142,7 +142,7 @@ export async function saveProfile(profileUserId, state) {
   const cardsToDelete = [...currentCardIds].filter(id => !stateCardIds.has(id))
   if (cardsToDelete.length > 0) {
     const { error: delCardErr } = await supabase.from('cards').delete().in('id', cardsToDelete)
-    if (delCardErr) throw delCardErr
+    if (delCardErr) throw new Error(`[cards.delete] ${delCardErr.message}`)
   }
 
   // 6. Upsert all cards
@@ -165,14 +165,14 @@ export async function saveProfile(profileUserId, state) {
   )
   if (cardRows.length > 0) {
     const { error } = await supabase.from('cards').upsert(cardRows, { onConflict: 'id' })
-    if (error) throw error
+    if (error) throw new Error(`[cards.upsert] ${error.message}`)
   }
 
   // 7. Handle bio
   if (bio === null) {
     if (currentBioRes.data) {
       const { error: delBioErr } = await supabase.from('bios').delete().eq('profile_id', profileUserId)
-      if (delBioErr) throw delBioErr
+      if (delBioErr) throw new Error(`[bios.delete] ${delBioErr.message}`)
     }
   } else {
     const bioRow = {
@@ -187,14 +187,14 @@ export async function saveProfile(profileUserId, state) {
     if (currentBioRes.data) {
       bioId = currentBioRes.data.id
       const { error: updateBioErr } = await supabase.from('bios').update(bioRow).eq('id', bioId)
-      if (updateBioErr) throw updateBioErr
+      if (updateBioErr) throw new Error(`[bios.update] ${updateBioErr.message}`)
     } else {
       const { data: newBio, error } = await supabase
         .from('bios')
         .insert(bioRow)
         .select('id')
         .single()
-      if (error) throw error
+      if (error) throw new Error(`[bios.insert] ${error.message}`)
       bioId = newBio.id
     }
 
@@ -209,7 +209,7 @@ export async function saveProfile(profileUserId, state) {
     const blocksToDelete = [...currentBlockIds].filter(id => !stateBlockIds.has(id))
     if (blocksToDelete.length > 0) {
       const { error: delBlockErr } = await supabase.from('bio_blocks').delete().in('id', blocksToDelete)
-      if (delBlockErr) throw delBlockErr
+      if (delBlockErr) throw new Error(`[bio_blocks.delete] ${delBlockErr.message}`)
     }
 
     if (bio.blocks && bio.blocks.length > 0) {
@@ -223,7 +223,7 @@ export async function saveProfile(profileUserId, state) {
       const { error } = await supabase
         .from('bio_blocks')
         .upsert(blockRows, { onConflict: 'id' })
-      if (error) throw error
+      if (error) throw new Error(`[bio_blocks.upsert] ${error.message}`)
     }
   }
 }
