@@ -1,7 +1,7 @@
-import { Save, LayoutGrid, RotateCcw, LogIn, LogOut, X } from 'lucide-react'
+import { Save, LayoutGrid, RotateCcw, LogIn, LogOut, X, Loader2 } from 'lucide-react'
 import { SET_MODE } from '../store/cardStore.js'
 
-export default function TopBar({ mode, isDirty, onSave, onReset, dispatch, isOwner, user, onSignIn, onSignOut, username, authError, onClearAuthError }) {
+export default function TopBar({ mode, isDirty, onSave, saving, saveError, onClearSaveError, onReset, dispatch, isOwner, user, onSignIn, onSignOut, username, authError, onClearAuthError }) {
   // Read-only users: just show a floating sign-in button, no branded header
   if (!isOwner) {
     return (
@@ -100,17 +100,34 @@ export default function TopBar({ mode, isDirty, onSave, onReset, dispatch, isOwn
         </button>
         <button
           onClick={onSave}
+          disabled={saving}
           className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-medium transition-all
-            ${isDirty
-              ? 'bg-blue-500 hover:bg-blue-400 text-white'
-              : 'bg-zinc-100 text-zinc-400 hover:bg-zinc-200 hover:text-zinc-600'}
+            ${saving
+              ? 'bg-blue-400 text-white cursor-wait'
+              : isDirty
+                ? 'bg-blue-500 hover:bg-blue-400 text-white'
+                : 'bg-zinc-100 text-zinc-400 hover:bg-zinc-200 hover:text-zinc-600'}
           `}
           title="Publish to Supabase"
         >
-          {isDirty && <span className="w-1.5 h-1.5 rounded-full bg-blue-200 mr-0.5" />}
-          <Save size={13} />
-          Publish
+          {saving
+            ? <Loader2 size={13} className="animate-spin" />
+            : <>
+                {isDirty && <span className="w-1.5 h-1.5 rounded-full bg-blue-200 mr-0.5" />}
+                <Save size={13} />
+              </>
+          }
+          {saving ? 'Publishing…' : 'Publish'}
         </button>
+
+        {saveError && (
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs font-medium">
+            <span>{saveError}</span>
+            <button onClick={onClearSaveError} className="hover:text-red-800 transition-colors">
+              <X size={13} />
+            </button>
+          </div>
+        )}
 
         {/* Auth buttons */}
         {user ? (

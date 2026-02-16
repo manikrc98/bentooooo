@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useState } from 'react'
 import { supabase } from '../lib/supabase.js'
 import { saveProfile } from '../lib/supabaseQueries.js'
 import { LOAD_STATE, SAVE } from '../store/cardStore.js'
@@ -57,6 +57,9 @@ function replaceUrls(config, urlMap) {
 }
 
 export function usePersistence(state, dispatch, profileData, profileUserId) {
+  const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState(null)
+
   // Load saved state from profileData on first mount
   useEffect(() => {
     if (profileData) {
@@ -66,7 +69,10 @@ export function usePersistence(state, dispatch, profileData, profileUserId) {
   }, [])
 
   const save = useCallback(async () => {
-    if (!profileUserId) return
+    if (!profileUserId || saving) return
+
+    setSaving(true)
+    setSaveError(null)
 
     try {
       // Collect blob URLs and upload to Supabase Storage
@@ -94,8 +100,13 @@ export function usePersistence(state, dispatch, profileData, profileUserId) {
       dispatch({ type: SAVE })
     } catch (err) {
       console.error('Publish failed:', err)
+      setSaveError(err.message || 'Publish failed')
+    } finally {
+      setSaving(false)
     }
-  }, [state.sections, state.bio, state.gridConfig, dispatch, profileUserId])
+  }, [state.sections, state.bio, state.gridConfig, dispatch, profileUserId, saving])
 
-  return { save }
+  const clearSaveError = useCallback(() => setSaveError(null), [])
+
+  return { save, saving, saveError, clearSaveError }
 }

@@ -87,7 +87,7 @@ export async function saveProfile(profileUserId, state) {
   const { sections, bio, gridConfig } = state
 
   // 1. Update grid config on profiles
-  await supabase
+  const { error: profileError } = await supabase
     .from('profiles')
     .update({
       grid_columns: gridConfig.columns,
@@ -96,6 +96,7 @@ export async function saveProfile(profileUserId, state) {
       updated_at: new Date().toISOString(),
     })
     .eq('id', profileUserId)
+  if (profileError) throw profileError
 
   // 2. Fetch current DB state for diffing
   const [currentSectionsRes, currentBioRes] = await Promise.all([
@@ -109,7 +110,8 @@ export async function saveProfile(profileUserId, state) {
   // 3. Delete removed sections (CASCADE deletes their cards)
   const sectionsToDelete = [...currentSectionIds].filter(id => !stateSectionIds.has(id))
   if (sectionsToDelete.length > 0) {
-    await supabase.from('sections').delete().in('id', sectionsToDelete)
+    const { error: delSecErr } = await supabase.from('sections').delete().in('id', sectionsToDelete)
+    if (delSecErr) throw delSecErr
   }
 
   // 4. Upsert sections
@@ -139,7 +141,8 @@ export async function saveProfile(profileUserId, state) {
   const stateCardIds = new Set(sections.flatMap(s => s.cards.map(c => c.id)))
   const cardsToDelete = [...currentCardIds].filter(id => !stateCardIds.has(id))
   if (cardsToDelete.length > 0) {
-    await supabase.from('cards').delete().in('id', cardsToDelete)
+    const { error: delCardErr } = await supabase.from('cards').delete().in('id', cardsToDelete)
+    if (delCardErr) throw delCardErr
   }
 
   // 6. Upsert all cards
@@ -168,7 +171,8 @@ export async function saveProfile(profileUserId, state) {
   // 7. Handle bio
   if (bio === null) {
     if (currentBioRes.data) {
-      await supabase.from('bios').delete().eq('profile_id', profileUserId)
+      const { error: delBioErr } = await supabase.from('bios').delete().eq('profile_id', profileUserId)
+      if (delBioErr) throw delBioErr
     }
   } else {
     const bioRow = {
@@ -182,7 +186,8 @@ export async function saveProfile(profileUserId, state) {
     let bioId
     if (currentBioRes.data) {
       bioId = currentBioRes.data.id
-      await supabase.from('bios').update(bioRow).eq('id', bioId)
+      const { error: updateBioErr } = await supabase.from('bios').update(bioRow).eq('id', bioId)
+      if (updateBioErr) throw updateBioErr
     } else {
       const { data: newBio, error } = await supabase
         .from('bios')
@@ -203,7 +208,8 @@ export async function saveProfile(profileUserId, state) {
 
     const blocksToDelete = [...currentBlockIds].filter(id => !stateBlockIds.has(id))
     if (blocksToDelete.length > 0) {
-      await supabase.from('bio_blocks').delete().in('id', blocksToDelete)
+      const { error: delBlockErr } = await supabase.from('bio_blocks').delete().in('id', blocksToDelete)
+      if (delBlockErr) throw delBlockErr
     }
 
     if (bio.blocks && bio.blocks.length > 0) {

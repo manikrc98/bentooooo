@@ -20,7 +20,7 @@ export default function App({ profileData, isOwner, username, profileUserId }) {
   const effectiveMode = isOwner ? mode : 'preview'
 
   const { handleSelect } = useCardSelection(dispatch, effectiveMode)
-  const { save } = usePersistence(state, dispatch, profileData, profileUserId)
+  const { save, saving, saveError, clearSaveError } = usePersistence(state, dispatch, profileData, profileUserId)
 
   // Find selected card across all sections
   const selectedCard = selectedCardId
@@ -42,6 +42,9 @@ export default function App({ profileData, isOwner, username, profileUserId }) {
         mode={effectiveMode}
         isDirty={isDirty}
         onSave={save}
+        saving={saving}
+        saveError={saveError}
+        onClearSaveError={clearSaveError}
         onReset={() => setShowResetModal(true)}
         dispatch={dispatch}
         isOwner={isOwner}
