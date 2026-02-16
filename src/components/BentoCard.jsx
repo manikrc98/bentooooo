@@ -63,15 +63,29 @@ function AutoScaleText({ text, cardRef, textColor }) {
     if (maxW <= 0 || maxH <= 0) return
 
     const el = measureRef.current
-    el.style.width = `${maxW}px`
-    el.style.maxWidth = `${maxW}px`
-    el.textContent = text
+    const words = text.split(/\s+/)
+    const longestWord = words.reduce((a, b) => a.length > b.length ? a : b, '')
 
     let lo = 12, hi = 120, best = 12
     while (lo <= hi) {
       const mid = Math.floor((lo + hi) / 2)
       el.style.fontSize = `${mid}px`
-      if (el.scrollWidth <= maxW && el.scrollHeight <= maxH) {
+
+      // Ensure longest word fits on one line
+      el.style.whiteSpace = 'nowrap'
+      el.style.width = 'auto'
+      el.style.maxWidth = 'none'
+      el.textContent = longestWord
+      const wordFits = el.scrollWidth <= maxW
+
+      // Ensure full text with wrapping fits in height
+      el.style.whiteSpace = 'pre-wrap'
+      el.style.width = `${maxW}px`
+      el.style.maxWidth = `${maxW}px`
+      el.textContent = text
+      const textFits = el.scrollHeight <= maxH
+
+      if (wordFits && textFits) {
         best = mid
         lo = mid + 1
       } else {
@@ -103,7 +117,6 @@ function AutoScaleText({ text, cardRef, textColor }) {
           left: -9999,
           visibility: 'hidden',
           pointerEvents: 'none',
-          overflowWrap: 'break-word',
         }}
       />
       <div
@@ -135,15 +148,30 @@ function AutoScaleTextarea({ text, cardRef, textColor, onChange }) {
     if (maxW <= 0 || maxH <= 0) return
 
     const el = measureRef.current
-    el.style.width = `${maxW}px`
-    el.style.maxWidth = `${maxW}px`
-    el.textContent = text || 'M'
+    const t = text || 'M'
+    const words = t.split(/\s+/)
+    const longestWord = words.reduce((a, b) => a.length > b.length ? a : b, '')
 
     let lo = 12, hi = 120, best = 12
     while (lo <= hi) {
       const mid = Math.floor((lo + hi) / 2)
       el.style.fontSize = `${mid}px`
-      if (el.scrollWidth <= maxW && el.scrollHeight <= maxH) {
+
+      // Ensure longest word fits on one line
+      el.style.whiteSpace = 'nowrap'
+      el.style.width = 'auto'
+      el.style.maxWidth = 'none'
+      el.textContent = longestWord
+      const wordFits = el.scrollWidth <= maxW
+
+      // Ensure full text with wrapping fits in height
+      el.style.whiteSpace = 'pre-wrap'
+      el.style.width = `${maxW}px`
+      el.style.maxWidth = `${maxW}px`
+      el.textContent = t
+      const textFits = el.scrollHeight <= maxH
+
+      if (wordFits && textFits) {
         best = mid
         lo = mid + 1
       } else {
@@ -181,7 +209,6 @@ function AutoScaleTextarea({ text, cardRef, textColor, onChange }) {
           left: -9999,
           visibility: 'hidden',
           pointerEvents: 'none',
-          overflowWrap: 'break-word',
         }}
       />
       <div className="absolute inset-0 flex items-center justify-center p-6">

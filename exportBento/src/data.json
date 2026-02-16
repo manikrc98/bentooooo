@@ -1,47 +1,203 @@
 {
   "sections": [
     {
-      "id": "section-1771210533953-5zjkm",
-      "title": "Untitled Section",
+      "id": "section-1771216558241-xape3",
+      "title": "✤ Live Work",
       "cards": [
         {
-          "id": "card-1771210674647-8130i",
-          "bento": "1x1",
-          "content": {
-            "imageUrl": "",
-            "title": "",
-            "bgColor": "#d3e4cd",
-            "textColor": "#374151",
-            "linkUrl": ""
-          }
-        },
-        {
-          "id": "card-1771210537586-8xuxq",
-          "bento": "1x2",
-          "content": {
-            "imageUrl": "",
-            "title": "",
-            "bgColor": "#fce8c3",
-            "textColor": "#374151",
-            "linkUrl": ""
-          }
-        },
-        {
-          "id": "card-1771210535652-671dd",
+          "id": "card-1771216570590-0hh6n",
           "bento": "2x2",
           "content": {
+            "type": "video",
             "imageUrl": "",
-            "title": "",
-            "bgColor": "#d3e4cd",
+            "videoUrl": "/api/assets/vid-1771216718444.mp4",
+            "text": "",
+            "title": "CC Rewards for Millenials and GenZ",
+            "bgColor": "#f5e6d3",
             "textColor": "#374151",
-            "linkUrl": ""
+            "linkUrl": "https://medium.com/@manikc.design/5e9e06d86a1d"
           }
         },
         {
-          "id": "card-1771210677563-vjp24",
+          "id": "card-1771216567840-xg7qq",
+          "bento": "2x1",
+          "content": {
+            "type": "image",
+            "imageUrl": "/api/assets/img-1771216718447.png",
+            "videoUrl": "",
+            "text": "",
+            "title": "Developers API Playground",
+            "bgColor": "#fce8c3",
+            "textColor": "#374151",
+            "linkUrl": "https://www.figma.com/proto/1pWbIxX0G1eP7U9Pkx7BAb/Porfolio-Projects?node-id=10-13722"
+          }
+        },
+        {
+          "id": "card-1771216566240-bjjqm",
+          "bento": "2x2",
+          "content": {
+            "type": "video",
+            "imageUrl": "",
+            "videoUrl": "/api/assets/vid-1771216718447.quicktime",
+            "text": "",
+            "title": "Increased WAU for Personal Finance",
+            "bgColor": "#d3e4cd",
+            "textColor": "#374151",
+            "linkUrl": "https://www.figma.com/proto/1pWbIxX0G1eP7U9Pkx7BAb/Porfolio-Projects?node-id=1-2637"
+          }
+        },
+        {
+          "id": "card-1771216572023-1wdgx",
+          "bento": "2x1",
+          "content": {
+            "type": "image",
+            "imageUrl": "/api/assets/img-1771216718449.png",
+            "videoUrl": "",
+            "text": "",
+            "title": "Boring T&C ➡️ Eye candy",
+            "bgColor": "#d3e4cd",
+            "textColor": "#374151",
+            "linkUrl": "https://compliance.fusion.tech/"
+          }
+        }
+      ]
+    },
+    {
+      "id": "section-1771216832424-6gbpv",
+      "title": "🏄🏻‍♂️ Fun Projects",
+      "cards": [
+        {
+          "id": "card-1771216850457-j0re5",
+          "bento": "1x2",
+          "content": {
+            "type": "image",
+            "imageUrl": "/api/assets/img-1771216923689.png",
+            "videoUrl": "",
+            "text": "",
+            "title": "Figma Plugin",
+            "bgColor": "#d3e4cd",
+            "textColor": "#374151",
+            "linkUrl": "https://www.figma.com/community/plugin/990910408295947511/lazy-load"
+          }
+        },
+        {
+          "id": "card-1771216849007-kfxcg",
+          "bento": "2x2",
+          "content": {
+            "type": "image",
+            "imageUrl": "/api/assets/img-1771216923690.png",
+            "videoUrl": "",
+            "text": "",
+            "title": "Crash Course",
+            "bgColor": "#f5e6d3",
+            "textColor": "#374151",
+            "linkUrl": "https://www.youtube.com/watch?v=t-KUccBqDVA&list=PLBbdXny7GpJQDhFeM75lS_Fh-LUwmRmOP"
+          }
+        },
+        {
+          "id": "card-1771216847241-3w06c",
+          "bento": "1x2",
+          "content": {
+            "type": "image",
+            "imageUrl": "/api/assets/img-1771216923690.png",
+            "videoUrl": "",
+            "text": "",
+            "title": "Initiative",
+            "bgColor": "#fce8c3",
+            "textColor": "#374151",
+            "linkUrl": "https://the-thank-tank.web.app/"
+          }
+        }
+      ]
+    },
+    {
+      "id": "section-1771216926923-cx6bv",
+      "title": "✦ Dope Visuals, Made in Figma",
+      "cards": [
+        {
+          "id": "card-1771216942590-afifp",
+          "bento": "1x2",
+          "content": {
+            "type": "video",
+            "imageUrl": "",
+            "videoUrl": "/api/assets/vid-1771217035659.quicktime",
+            "text": "",
+            "title": "Money Wrapped",
+            "bgColor": "#d3e4cd",
+            "textColor": "#374151",
+            "linkUrl": "https://www.figma.com/proto/r8bqWSgjogiyJIKid4NDbl/Jupiter-Wrapped-2023?node-id=1-36"
+          }
+        },
+        {
+          "id": "card-1771216941173-fw8ej",
+          "bento": "2x2",
+          "content": {
+            "type": "video",
+            "imageUrl": "",
+            "videoUrl": "/api/assets/vid-1771217035664.mp4",
+            "text": "",
+            "title": "Gratitude Initiative",
+            "bgColor": "#f5e6d3",
+            "textColor": "#374151",
+            "linkUrl": "https://the-thank-tank.web.app/"
+          }
+        },
+        {
+          "id": "card-1771216937024-8o4kp",
+          "bento": "1x2",
+          "content": {
+            "type": "video",
+            "imageUrl": "",
+            "videoUrl": "/api/assets/vid-1771217035669.mp4",
+            "text": "",
+            "title": "CC Pitch",
+            "bgColor": "#fce8c3",
+            "textColor": "#374151",
+            "linkUrl": "https://www.figma.com/proto/r8bqWSgjogiyJIKid4NDbl/Jupiter-Projects?node-id=13-4270"
+          }
+        },
+        {
+          "id": "card-1771217051607-npkae",
+          "bento": "2x1",
+          "content": {
+            "type": "image",
+            "imageUrl": "/api/assets/img-1771217216078.png",
+            "videoUrl": "",
+            "text": "",
+            "title": "Sodexo Spain",
+            "bgColor": "#fce8c3",
+            "textColor": "#374151",
+            "linkUrl": "https://manikchugh.xyz/#"
+          }
+        },
+        {
+          "id": "card-1771217052656-2qhdr",
           "bento": "1x1",
           "content": {
+            "type": "video",
             "imageUrl": "",
+            "videoUrl": "/api/assets/vid-1771217216079.quicktime",
+            "text": "",
+            "title": "Virtual Cards",
+            "bgColor": "#f5e6d3",
+            "textColor": "#374151",
+            "linkUrl": "https://www.figma.com/proto/HhIxSOjDB96eCMnPlqfnsl/Manik-Chugh's-Portfolio?node-id=1-443"
+          }
+        }
+      ]
+    },
+    {
+      "id": "section-1771217180389-1mby3",
+      "title": "💼 Worked at",
+      "cards": [
+        {
+          "id": "card-1771217189989-cpxye",
+          "bento": "1x1",
+          "content": {
+            "type": "image",
+            "imageUrl": "/api/assets/img-1771217216086.png",
+            "videoUrl": "",
+            "text": "",
             "title": "",
             "bgColor": "#f5e6d3",
             "textColor": "#374151",
@@ -49,10 +205,241 @@
           }
         },
         {
-          "id": "card-1771210676330-mun3y",
+          "id": "card-1771217189189-3wsc8",
+          "bento": "1x1",
+          "content": {
+            "type": "image",
+            "imageUrl": "/api/assets/img-1771217224945.png",
+            "videoUrl": "",
+            "text": "",
+            "title": "",
+            "bgColor": "#fce8c3",
+            "textColor": "#374151",
+            "linkUrl": ""
+          }
+        },
+        {
+          "id": "card-1771217188439-ukhl2",
+          "bento": "1x1",
+          "content": {
+            "type": "image",
+            "imageUrl": "/api/assets/img-1771217216087.png",
+            "videoUrl": "",
+            "text": "",
+            "title": "",
+            "bgColor": "#d3e4cd",
+            "textColor": "#374151",
+            "linkUrl": ""
+          }
+        }
+      ]
+    },
+    {
+      "id": "section-1771217289439-338m3",
+      "title": "🌊 In 2023, I Learnt to",
+      "cards": [
+        {
+          "id": "card-1771217302622-yql1s",
+          "bento": "1x1",
+          "content": {
+            "type": "video",
+            "imageUrl": "",
+            "videoUrl": "/api/assets/vid-1771217448459.mp4",
+            "text": "",
+            "title": "🎸 Guitar",
+            "bgColor": "#f5e6d3",
+            "textColor": "#374151",
+            "linkUrl": ""
+          }
+        },
+        {
+          "id": "card-1771217301556-j0m3j",
           "bento": "2x1",
           "content": {
+            "type": "image",
+            "imageUrl": "/api/assets/img-1771217448461.png",
+            "videoUrl": "",
+            "text": "",
+            "title": "🇯🇵 Japanese",
+            "bgColor": "#fce8c3",
+            "textColor": "#374151",
+            "linkUrl": ""
+          }
+        },
+        {
+          "id": "card-1771217298689-rmovp",
+          "bento": "2x1",
+          "content": {
+            "type": "image",
+            "imageUrl": "/assets/img-1771219007922.jpg",
+            "videoUrl": "",
+            "text": "",
+            "title": "✈️ Solo",
+            "bgColor": "#d3e4cd",
+            "textColor": "#374151",
+            "linkUrl": ""
+          }
+        },
+        {
+          "id": "card-1771217304839-pzv6i",
+          "bento": "1x1",
+          "content": {
+            "type": "image",
+            "imageUrl": "/api/assets/img-1771217448462.jpg",
+            "videoUrl": "",
+            "text": "",
+            "title": "🚗 Drive",
+            "bgColor": "#d3e4cd",
+            "textColor": "#374151",
+            "linkUrl": ""
+          }
+        },
+        {
+          "id": "card-1771217306055-yhvwx",
+          "bento": "1x1",
+          "content": {
+            "type": "image",
+            "imageUrl": "/api/assets/img-1771217448464.jpg",
+            "videoUrl": "",
+            "text": "",
+            "title": "🎨 Paint",
+            "bgColor": "#fce8c3",
+            "textColor": "#374151",
+            "linkUrl": ""
+          }
+        }
+      ]
+    },
+    {
+      "id": "section-1771217451155-cmmrk",
+      "title": "🏆 Proud of",
+      "cards": [
+        {
+          "id": "card-1771217458322-r93gs",
+          "bento": "2x2",
+          "content": {
+            "type": "image",
+            "imageUrl": "/api/assets/img-1771217525467.png",
+            "videoUrl": "",
+            "text": "",
+            "title": "🌟 Shining Star, Dec 2020",
+            "bgColor": "#f5e6d3",
+            "textColor": "#374151",
+            "linkUrl": ""
+          }
+        },
+        {
+          "id": "card-1771217460322-47has",
+          "bento": "1x2",
+          "content": {
+            "type": "image",
+            "imageUrl": "/api/assets/img-1771217525468.jpg",
+            "videoUrl": "",
+            "text": "",
+            "title": "Public Speaking",
+            "bgColor": "#d3e4cd",
+            "textColor": "#374151",
+            "linkUrl": ""
+          }
+        },
+        {
+          "id": "card-1771217464771-w36an",
+          "bento": "1x1",
+          "content": {
+            "type": "image",
+            "imageUrl": "/api/assets/img-1771217525469.jpg",
+            "videoUrl": "",
+            "text": "",
+            "title": "Performance Award",
+            "bgColor": "#fce8c3",
+            "textColor": "#374151",
+            "linkUrl": ""
+          }
+        },
+        {
+          "id": "card-1771217537754-t7ddt",
+          "bento": "2x1",
+          "content": {
+            "type": "image",
+            "imageUrl": "/api/assets/img-1771217567917.png",
+            "videoUrl": "",
+            "text": "",
+            "title": "Design Mentoring",
+            "bgColor": "#d3e4cd",
+            "textColor": "#374151",
+            "linkUrl": "https://www.figma.com/proto/Ygz6ORekIMMnTngeQVQHVh/Visual-%E0%A4%AA%E0%A4%BE%E0%A4%A0---Home-File?node-id=10-5"
+          }
+        },
+        {
+          "id": "card-1771217536522-nohql",
+          "bento": "2x1",
+          "content": {
+            "type": "video",
             "imageUrl": "",
+            "videoUrl": "/api/assets/vid-1771217567918.quicktime",
+            "text": "",
+            "title": "38,840+ Plugin Downloads",
+            "bgColor": "#f5e6d3",
+            "textColor": "#374151",
+            "linkUrl": "https://www.figma.com/community/plugin/990910408295947511/lazy-load"
+          }
+        }
+      ]
+    },
+    {
+      "id": "section-1771217527455-r0k8y",
+      "title": "📸 Hand clicked",
+      "cards": [
+        {
+          "id": "card-1771217588538-rbn4y",
+          "bento": "2x2",
+          "content": {
+            "type": "image",
+            "imageUrl": "/api/assets/img-1771217695122.jpg",
+            "videoUrl": "",
+            "text": "",
+            "title": "",
+            "bgColor": "#fce8c3",
+            "textColor": "#374151",
+            "linkUrl": ""
+          }
+        },
+        {
+          "id": "card-1771217590755-addpq",
+          "bento": "1x1",
+          "content": {
+            "type": "image",
+            "imageUrl": "/api/assets/img-1771217695123.jpg",
+            "videoUrl": "",
+            "text": "",
+            "title": "",
+            "bgColor": "#d3e4cd",
+            "textColor": "#374151",
+            "linkUrl": ""
+          }
+        },
+        {
+          "id": "card-1771217589838-d70uf",
+          "bento": "1x1",
+          "content": {
+            "type": "image",
+            "imageUrl": "/api/assets/img-1771217695123.jpg",
+            "videoUrl": "",
+            "text": "",
+            "title": "",
+            "bgColor": "#f5e6d3",
+            "textColor": "#374151",
+            "linkUrl": ""
+          }
+        },
+        {
+          "id": "card-1771217592554-j9yau",
+          "bento": "1x1",
+          "content": {
+            "type": "image",
+            "imageUrl": "/api/assets/img-1771217695128.jpg",
+            "videoUrl": "",
+            "text": "",
             "title": "",
             "bgColor": "#fce8c3",
             "textColor": "#374151",
@@ -60,13 +447,245 @@
           }
         }
       ]
+    },
+    {
+      "id": "section-1771217635371-wheqe",
+      "title": " Graphic",
+      "cards": [
+        {
+          "id": "card-1771217650787-9357n",
+          "bento": "2x1",
+          "content": {
+            "type": "image",
+            "imageUrl": "/api/assets/img-1771217695131.png",
+            "videoUrl": "",
+            "text": "",
+            "title": "",
+            "bgColor": "#fce8c3",
+            "textColor": "#374151",
+            "linkUrl": ""
+          }
+        },
+        {
+          "id": "card-1771217650037-g4jun",
+          "bento": "2x2",
+          "content": {
+            "type": "image",
+            "imageUrl": "/api/assets/img-1771217695136.png",
+            "videoUrl": "",
+            "text": "",
+            "title": "",
+            "bgColor": "#d3e4cd",
+            "textColor": "#374151",
+            "linkUrl": ""
+          }
+        },
+        {
+          "id": "card-1771217649188-lczyo",
+          "bento": "2x1",
+          "content": {
+            "type": "image",
+            "imageUrl": "/api/assets/img-1771217695132.png",
+            "videoUrl": "",
+            "text": "",
+            "title": "",
+            "bgColor": "#f5e6d3",
+            "textColor": "#374151",
+            "linkUrl": ""
+          }
+        }
+      ]
+    },
+    {
+      "id": "section-1771217724774-81vyw",
+      "title": "💬 Words Matter",
+      "cards": [
+        {
+          "id": "card-1771217761091-tdz5b",
+          "bento": "2x2",
+          "content": {
+            "type": "image",
+            "imageUrl": "/api/assets/img-1771217843044.png",
+            "videoUrl": "",
+            "text": "",
+            "title": "",
+            "bgColor": "#f5e6d3",
+            "textColor": "#374151",
+            "linkUrl": ""
+          }
+        },
+        {
+          "id": "card-1771217763090-srcqg",
+          "bento": "2x1",
+          "content": {
+            "type": "image",
+            "imageUrl": "/api/assets/img-1771217843045.png",
+            "videoUrl": "",
+            "text": "",
+            "title": "",
+            "bgColor": "#d3e4cd",
+            "textColor": "#374151",
+            "linkUrl": ""
+          }
+        },
+        {
+          "id": "card-1771217765723-am4ot",
+          "bento": "2x1",
+          "content": {
+            "type": "image",
+            "imageUrl": "/api/assets/img-1771217843045.png",
+            "videoUrl": "",
+            "text": "",
+            "title": "",
+            "bgColor": "#fce8c3",
+            "textColor": "#374151",
+            "linkUrl": ""
+          }
+        },
+        {
+          "id": "card-1771217768256-3luto",
+          "bento": "2x1",
+          "content": {
+            "type": "image",
+            "imageUrl": "/api/assets/img-1771217843046.png",
+            "videoUrl": "",
+            "text": "",
+            "title": "",
+            "bgColor": "#f5e6d3",
+            "textColor": "#374151",
+            "linkUrl": ""
+          }
+        }
+      ]
+    },
+    {
+      "id": "section-1771218096840-u8wu8",
+      "title": "📚 Enjoyed Reading",
+      "cards": [
+        {
+          "id": "card-1771218109222-r2imc",
+          "bento": "2x2",
+          "content": {
+            "type": "image",
+            "imageUrl": "/api/assets/img-1771218177755.png",
+            "videoUrl": "",
+            "text": "",
+            "title": "",
+            "bgColor": "#d3e4cd",
+            "textColor": "#374151",
+            "linkUrl": ""
+          }
+        },
+        {
+          "id": "card-1771218111605-6gm67",
+          "bento": "1x1",
+          "content": {
+            "type": "image",
+            "imageUrl": "/api/assets/img-1771218177757.png",
+            "videoUrl": "",
+            "text": "",
+            "title": "",
+            "bgColor": "#f5e6d3",
+            "textColor": "#374151",
+            "linkUrl": ""
+          }
+        },
+        {
+          "id": "card-1771218110522-ywpvg",
+          "bento": "1x1",
+          "content": {
+            "type": "image",
+            "imageUrl": "/api/assets/img-1771218177758.png",
+            "videoUrl": "",
+            "text": "",
+            "title": "",
+            "bgColor": "#fce8c3",
+            "textColor": "#374151",
+            "linkUrl": ""
+          }
+        }
+      ]
+    },
+    {
+      "id": "section-1771218393622-ksm0z",
+      "title": "🔗 Important Links",
+      "cards": [
+        {
+          "id": "card-1771218408188-2zqla",
+          "bento": "2x1",
+          "content": {
+            "type": "text",
+            "imageUrl": "",
+            "videoUrl": "",
+            "text": "📄 Resume",
+            "title": "",
+            "bgColor": "#f5e6d3",
+            "textColor": "#374151",
+            "linkUrl": "https://drive.google.com/file/d/1xxDrL2pL7HcLcTfpJWt2JGT9ypnv0YxW/view"
+          }
+        },
+        {
+          "id": "card-1771218407055-92uq3",
+          "bento": "2x1",
+          "content": {
+            "type": "image",
+            "imageUrl": "/api/assets/img-1771218499939.png",
+            "videoUrl": "",
+            "text": "",
+            "title": "",
+            "bgColor": "#fce8c3",
+            "textColor": "#374151",
+            "linkUrl": "manikc.design@gmail.com"
+          }
+        },
+        {
+          "id": "card-1771218458171-1oc5q",
+          "bento": "4x1",
+          "content": {
+            "type": "text",
+            "imageUrl": "",
+            "videoUrl": "",
+            "text": "Thanks for taking out time to go through my Portfolio! I appreciate that ♥️",
+            "title": "",
+            "bgColor": "#d3e4cd",
+            "textColor": "#374151",
+            "linkUrl": ""
+          }
+        }
+      ]
     }
   ],
-  "bio": null,
+  "bio": {
+    "avatar": "/api/assets/img-1771216327209.png",
+    "name": "Manik Chugh",
+    "description": "Senior visual designer @ Moveworks\nPrev at Jupiter, Zeta, Headout",
+    "blocks": [
+      {
+        "id": "block-1771216247908-8s8b8",
+        "heading": "Brings to the table",
+        "body": "✨ Delightful Visuals\n🗓️ 5yrs experience of Building consumer apps\n💬 User Interview Skills"
+      },
+      {
+        "id": "block-1771216286658-zs3sc",
+        "heading": "Loves to",
+        "body": "🔭 Chat about cosmos\n🎸 Play Guitar\n👾 Develop Figma Plugins"
+      },
+      {
+        "id": "block-1771216299424-ze7bo",
+        "heading": "Contact",
+        "body": "✉️ manikc.design@gmail.com\n📞 73598 80791"
+      },
+      {
+        "id": "block-1771218349838-gv0g1",
+        "heading": "Social",
+        "body": "LinkedIN\nTwitter\nInstagram"
+      }
+    ]
+  },
   "gridConfig": {
     "columns": 4,
     "cellGap": 8,
     "aspectRatio": 1
   },
-  "savedAt": "2026-02-16T03:24:47.232Z"
+  "savedAt": "2026-02-16T05:16:47.925Z"
 }
