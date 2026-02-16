@@ -37,6 +37,17 @@ export function useBentoGrid(containerRef, cards, gridConfig, mode, onAddCard) {
   const onAddRef = useRef(onAddCard)
   onAddRef.current = onAddCard
 
+  // ── Compute initial column count synchronously to avoid flash ────────────
+  useLayoutEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+    const width = el.clientWidth
+    if (width > 0) {
+      setEffectiveCols(responsiveColumns(width, gridConfig.columns, gridConfig.cellGap))
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   // ── Observe container width and derive responsive column count ──────────
   useEffect(() => {
     const el = containerRef.current
@@ -68,7 +79,14 @@ export function useBentoGrid(containerRef, cards, gridConfig, mode, onAddCard) {
       .querySelectorAll('.dynamic-add-btn')
       .forEach(el => el.remove())
 
-    // Destroy previous instance so we can recreate with new columns
+    // Disconnect previous instance's ResizeObserver and cancel its pending timeout
+    if (instanceRef.current) {
+      const ro = instanceRef.current.resizeObserver
+      if (ro) {
+        if (ro._timeoutId) clearTimeout(ro._timeoutId)
+        if (ro instanceof ResizeObserver) ro.disconnect()
+      }
+    }
     instanceRef.current = null
 
     // Place [+] buttons in every empty grid cell after BentoGrid calculates
@@ -80,15 +98,25 @@ export function useBentoGrid(containerRef, cards, gridConfig, mode, onAddCard) {
       if (mode !== 'edit') return
 
       const cols = colsRef.current
+
+      // Ensure grid template columns are defined (BentoGrid may not set them for 0 items)
+      if (!container.style.gridTemplateColumns) {
+        container.style.gridTemplateColumns = `repeat(${cols}, 1fr)`
+        container.style.gap = `${gridConfig.cellGap}px`
+      }
+
       const items = container.querySelectorAll(':scope > [data-bento]')
       const occupied = new Set()
       let maxRowEnd = 0
 
+      // Track each card's grid start position for insertion index calculation
+      const cardGridPositions = []
       items.forEach(item => {
         const rowStart = parseInt(item.style.gridRow) || 1
         const rowSpan = parseInt((item.style.gridRow.split('span ')[1])) || 1
         const colStart = parseInt(item.style.gridColumn) || 1
         const colSpan = parseInt((item.style.gridColumn.split('span ')[1])) || 1
+        cardGridPositions.push({ rowStart, colStart })
         for (let r = rowStart; r < rowStart + rowSpan; r++) {
           for (let c = colStart; c < colStart + colSpan; c++) {
             occupied.add(`${r},${c}`)
@@ -134,8 +162,66 @@ export function useBentoGrid(containerRef, cards, gridConfig, mode, onAddCard) {
               btn.style.gridColumn = `${c} / span 1`
               btn.style.gridRow = `${r} / span 1`
               btn.title = 'Add card'
-              btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>'
-              btn.addEventListener('click', () => onAddRef.current?.())
+
+              // Absolutely positioned wrapper so content doesn't expand grid row
+              const wrapper = document.createElement('div')
+              wrapper.className = 'grid-selector-wrapper'
+
+              // Grid size selector
+              const maxSelectCols = cols
+              const maxSelectRows = 4
+              const grid = document.createElement('div')
+              grid.className = 'grid-selector'
+              grid.style.gridTemplateColumns = `repeat(${maxSelectCols}, 1fr)`
+
+              const sizeLabel = document.createElement('div')
+              sizeLabel.className = 'grid-size-label'
+              sizeLabel.textContent = '\u00A0'
+
+              for (let sr = 1; sr <= maxSelectRows; sr++) {
+                for (let sc = 1; sc <= maxSelectCols; sc++) {
+                  const cell = document.createElement('div')
+                  cell.className = 'grid-selector-cell'
+                  cell.dataset.row = sr
+                  cell.dataset.col = sc
+
+                  cell.addEventListener('mouseenter', () => {
+                    grid.querySelectorAll('.grid-selector-cell').forEach(el => {
+                      const cr = parseInt(el.dataset.row)
+                      const cc = parseInt(el.dataset.col)
+                      if (cr <= sr && cc <= sc) {
+                        el.classList.add('highlighted')
+                      } else {
+                        el.classList.remove('highlighted')
+                      }
+                    })
+                    sizeLabel.textContent = `${sc}\u00D7${sr}`
+                  })
+
+                  cell.addEventListener('click', (e) => {
+                    e.stopPropagation()
+                    // Insert before all cards in this row so the new (possibly larger) card
+                    // gets placed first by BentoGrid, pushing existing row cards down
+                    const insertIndex = cardGridPositions.filter(cp =>
+                      cp.rowStart < r
+                    ).length
+                    onAddRef.current?.(`${sc}x${sr}`, insertIndex)
+                  })
+
+                  grid.appendChild(cell)
+                }
+              }
+
+              grid.addEventListener('mouseleave', () => {
+                grid.querySelectorAll('.grid-selector-cell').forEach(el => {
+                  el.classList.remove('highlighted')
+                })
+                sizeLabel.textContent = '\u00A0'
+              })
+
+              wrapper.appendChild(grid)
+              wrapper.appendChild(sizeLabel)
+              btn.appendChild(wrapper)
               container.appendChild(btn)
               if (!hasCardAhead(r, c)) trailingAddPlaced = true
             }

@@ -20,32 +20,55 @@
   border-radius: 16px;
   outline: 2px dashed #e4e4e7;
   outline-offset: -2px;
-  cursor: pointer;
   overflow: hidden;
   position: relative;
-  transition: all 150ms;
+  transition: outline-color 150ms;
 }
 
 .dynamic-add-btn:hover {
   outline-color: #d4d4d8;
-  background: rgba(244, 244, 245, 0.6);
 }
 
-.dynamic-add-btn:active {
-  transform: scale(0.95);
-}
-
-.dynamic-add-btn svg {
+/* Absolutely positioned wrapper so content doesn't affect grid row height */
+.grid-selector-wrapper {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: #d4d4d8;
-  transition: color 150ms;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 18%;
+  box-sizing: border-box;
 }
 
-.dynamic-add-btn:hover svg {
-  color: #71717a;
+/* Grid size selector */
+.grid-selector {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+}
+
+.grid-selector-cell {
+  aspect-ratio: 1;
+  border-radius: 3px;
+  background: #e4e4e7;
+  cursor: pointer;
+  transition: background 100ms;
+}
+
+.grid-selector-cell.highlighted {
+  background: #60a5fa;
+}
+
+.grid-size-label {
+  font-size: 11px;
+  color: #a1a1aa;
+  font-weight: 500;
+  min-height: 14px;
+  text-align: center;
+  font-family: system-ui, -apple-system, sans-serif;
+  user-select: none;
 }
 
 /* ── Card base ───────────────────────────────────────────────── */
@@ -93,5 +116,11 @@
 
 /* ── Bio sidebar ─────────────────────────────────────────────── */
 .bio-sidebar {
-  margin-right: 24px;
+  margin-right: 0;
+}
+
+@media (min-width: 1024px) {
+  .bio-sidebar {
+    margin-right: 24px;
+  }
 }

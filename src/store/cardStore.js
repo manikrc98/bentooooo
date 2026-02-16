@@ -80,13 +80,19 @@ export function reducer(state, action) {
       return { ...state, selectedCardId: null }
 
     case ADD_CARD: {
-      const { sectionId, id } = action.payload
-      const newCard = makeCard('1x1', id)
+      const { sectionId, id, bento, insertIndex } = action.payload
+      const newCard = makeCard(bento || '1x1', id)
       return {
         ...state,
-        sections: state.sections.map(s =>
-          s.id === sectionId ? { ...s, cards: [...s.cards, newCard] } : s
-        ),
+        sections: state.sections.map(s => {
+          if (s.id !== sectionId) return s
+          if (insertIndex != null) {
+            const next = [...s.cards]
+            next.splice(insertIndex, 0, newCard)
+            return { ...s, cards: next }
+          }
+          return { ...s, cards: [...s.cards, newCard] }
+        }),
         selectedCardId: newCard.id,
         isDirty: true,
       }

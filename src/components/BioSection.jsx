@@ -31,7 +31,7 @@ export default function BioSection({ bio, mode, dispatch }) {
   // No bio yet — show the "Add bio" CTA in edit mode (absolutely positioned, doesn't shift layout)
   if (!bio) {
     return (
-      <div className="absolute left-6 top-6 bottom-6 flex items-stretch" style={{ width: '48px', zIndex: 10 }}>
+      <div className="relative lg:absolute lg:left-6 lg:top-6 lg:bottom-6 flex items-stretch mb-4 lg:mb-0" style={{ width: '48px', zIndex: 10 }}>
         <button
           onClick={() => dispatch({ type: SET_BIO, payload: makeBio() })}
           className="w-full rounded-xl border-2 border-dashed border-zinc-200
@@ -90,7 +90,7 @@ export default function BioSection({ bio, mode, dispatch }) {
 
   return (
     <>
-      <div className="bio-sidebar shrink-0 w-64 sticky top-0 self-start relative">
+      <div className="bio-sidebar shrink-0 w-full lg:w-64 lg:sticky lg:top-0 lg:self-start relative mb-6 lg:mb-0">
         {/* Delete button — top right, edit mode only */}
         {isEditMode && (
           <button

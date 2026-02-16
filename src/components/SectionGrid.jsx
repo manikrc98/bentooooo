@@ -20,9 +20,9 @@ export default function SectionGrid({ section, state, dispatch, selectedCardId, 
   const flipRectsRef = useRef(new Map())
   const draggedIdRef = useRef(null)
 
-  const handleAdd = useCallback(() => {
+  const handleAdd = useCallback((bento, insertIndex) => {
     const newId = `card-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
-    dispatch({ type: ADD_CARD, payload: { id: newId, sectionId: section.id } })
+    dispatch({ type: ADD_CARD, payload: { id: newId, sectionId: section.id, bento, insertIndex } })
   }, [dispatch, section.id])
 
   const { effectiveCols } = useBentoGrid(containerRef, cards, gridConfig, mode, handleAdd)

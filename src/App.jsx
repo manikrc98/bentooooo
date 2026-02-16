@@ -51,7 +51,7 @@ export default function App() {
         />
       )}
 
-      <div className="flex-1 flex min-h-0 overflow-y-auto px-6 py-6 relative">
+      <div className="flex-1 flex flex-col lg:flex-row min-h-0 overflow-y-auto px-6 py-6 relative">
         <BioSection bio={bio} mode={mode} dispatch={dispatch} />
 
         <BentoCanvas
