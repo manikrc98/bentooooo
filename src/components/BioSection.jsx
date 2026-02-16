@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import { Plus, Trash2, ImagePlus, X } from 'lucide-react'
 import { SET_BIO, CLEAR_BIO } from '../store/cardStore.js'
+import { compressImage } from '../utils/imageCompression.js'
 
 function makeBioBlock() {
   return {
@@ -54,10 +55,11 @@ export default function BioSection({ bio, mode, dispatch }) {
     )
   }
 
-  function handleAvatarUpload(e) {
+  async function handleAvatarUpload(e) {
     const file = e.target.files?.[0]
     if (!file) return
-    const url = URL.createObjectURL(file)
+    const compressed = await compressImage(file)
+    const url = URL.createObjectURL(compressed)
     dispatch({ type: SET_BIO, payload: { avatar: url } })
   }
 

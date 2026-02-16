@@ -1,4 +1,5 @@
 import { useEffect, useCallback } from 'react'
+import { supabase } from '../lib/supabase.js'
 import { LOAD_STATE, SAVE } from '../store/cardStore.js'
 
 /** Collect all blob URLs from state (cards + bio avatar) */
@@ -21,62 +22,83 @@ function collectBlobUrls(state) {
   return urls
 }
 
-/** Fetch a blob URL and return base64 + metadata */
-async function blobToBase64(blobUrl) {
+/** Upload a blob URL to Supabase Storage and return the public URL */
+async function uploadBlob(blobUrl, userId) {
   const res = await fetch(blobUrl)
   const blob = await res.blob()
-  const buffer = await blob.arrayBuffer()
-  const base64 = btoa(
-    new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
-  )
+  const ext = blob.type.split('/')[1]?.split(';')[0] || 'bin'
   const isVideo = blob.type.startsWith('video/')
-  return { data: base64, type: blob.type, name: isVideo ? 'vid' : 'img' }
+  const prefix = isVideo ? 'vid' : 'img'
+  const fileName = `${userId}/${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${ext}`
+
+  const { error } = await supabase.storage
+    .from('bento-assets')
+    .upload(fileName, blob, { contentType: blob.type, upsert: false })
+
+  if (error) throw error
+
+  const { data: urlData } = supabase.storage
+    .from('bento-assets')
+    .getPublicUrl(fileName)
+
+  return urlData.publicUrl
 }
 
-export function usePersistence(state, dispatch) {
-  // Load saved state on first mount
+/** Replace blob URLs in config with Supabase public URLs */
+function replaceUrls(config, urlMap) {
+  const json = JSON.stringify(config)
+  let result = json
+  for (const [blobUrl, publicUrl] of Object.entries(urlMap)) {
+    result = result.replaceAll(blobUrl, publicUrl)
+  }
+  return JSON.parse(result)
+}
+
+export function usePersistence(state, dispatch, profileData, profileUserId) {
+  // Load saved state from profileData on first mount
   useEffect(() => {
-    fetch('/api/load')
-      .then(res => res.json())
-      .then(data => {
-        if (data) {
-          dispatch({ type: LOAD_STATE, payload: data })
-        }
-      })
-      .catch(() => {
-        // Server not available — start fresh
-      })
+    if (profileData) {
+      dispatch({ type: LOAD_STATE, payload: profileData })
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const save = useCallback(async () => {
+    if (!profileUserId) return
+
     try {
-      // Collect blob URLs and convert to base64
+      // Collect blob URLs and upload to Supabase Storage
       const blobUrls = collectBlobUrls(state)
-      const images = {}
+      const urlMap = {}
       for (const url of blobUrls) {
-        images[url] = await blobToBase64(url)
+        urlMap[url] = await uploadBlob(url, profileUserId)
       }
 
-      const payload = {
+      // Build config with public URLs
+      const config = {
         sections: state.sections,
         bio: state.bio,
         gridConfig: state.gridConfig,
       }
+      const finalConfig = Object.keys(urlMap).length > 0
+        ? replaceUrls(config, urlMap)
+        : config
 
-      const res = await fetch('/api/save', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ state: payload, images }),
-      })
+      // Write config to profiles table
+      const { error } = await supabase
+        .from('profiles')
+        .update({ config: finalConfig, updated_at: new Date().toISOString() })
+        .eq('id', profileUserId)
 
-      const updatedState = await res.json()
-      dispatch({ type: LOAD_STATE, payload: updatedState })
+      if (error) throw error
+
+      // Reload state with public URLs so editor shows them
+      dispatch({ type: LOAD_STATE, payload: finalConfig })
       dispatch({ type: SAVE })
     } catch (err) {
-      console.error('Save failed:', err)
+      console.error('Publish failed:', err)
     }
-  }, [state.sections, state.bio, state.gridConfig, dispatch])
+  }, [state.sections, state.bio, state.gridConfig, dispatch, profileUserId])
 
   return { save }
 }

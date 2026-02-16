@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import { Trash2, ImagePlus, Video, Type, Link } from 'lucide-react'
 import { UPDATE_CARD_CONTENT } from '../store/cardStore.js'
+import { compressImage } from '../utils/imageCompression.js'
 
 export default function FloatingTray({ selectedCard, onRemove, dispatch }) {
   const isVisible = selectedCard !== null
@@ -9,10 +10,11 @@ export default function FloatingTray({ selectedCard, onRemove, dispatch }) {
 
   const contentType = selectedCard?.content?.type || 'image'
 
-  function handleImageUpload(e) {
+  async function handleImageUpload(e) {
     const file = e.target.files?.[0]
     if (!file || !selectedCard) return
-    const url = URL.createObjectURL(file)
+    const compressed = await compressImage(file)
+    const url = URL.createObjectURL(compressed)
     dispatch({ type: UPDATE_CARD_CONTENT, payload: { id: selectedCard.id, updates: { type: 'image', imageUrl: url, videoUrl: '' } } })
   }
 
