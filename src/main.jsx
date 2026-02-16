@@ -10,7 +10,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <AuthProvider>
         <Routes>
-          <Route path="/" element={<ProfilePage defaultUsername="manik" />} />
+          <Route path="/" element={<ProfilePage defaultUsername="manikrc98" />} />
           <Route path="/:username" element={<ProfilePage />} />
         </Routes>
       </AuthProvider>
