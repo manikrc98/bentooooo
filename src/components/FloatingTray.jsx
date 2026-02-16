@@ -1,64 +1,9 @@
 import { useRef } from 'react'
 import { Trash2, ImagePlus, Link } from 'lucide-react'
-import { formatBento } from '../utils/bentoDimensions.js'
 import { UPDATE_CARD_CONTENT } from '../store/cardStore.js'
 
-const PRESETS = [
-  { label: '1×1', cols: 1, rows: 1 },
-  { label: '1×2', cols: 1, rows: 2 },
-  { label: '2×1', cols: 2, rows: 1 },
-  { label: '2×2', cols: 2, rows: 2 },
-  { label: '3×1', cols: 3, rows: 1 },
-  { label: '3×2', cols: 3, rows: 2 },
-  { label: '2×3', cols: 2, rows: 3 },
-  { label: '4×1', cols: 4, rows: 1 },
-  { label: '4×2', cols: 4, rows: 2 },
-]
-
-function PresetButton({ preset, isActive, onClick }) {
-  const { label, cols, rows } = preset
-  return (
-    <button
-      onClick={onClick}
-      className={`
-        flex flex-col items-center gap-1.5 px-3 py-2 rounded-xl
-        transition-all duration-150 select-none
-        ${isActive
-          ? 'bg-blue-50 ring-1 ring-blue-400/60'
-          : 'hover:bg-zinc-100 active:scale-95'}
-      `}
-      title={label}
-    >
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: `repeat(${cols}, 7px)`,
-          gridTemplateRows: `repeat(${rows}, 7px)`,
-          gap: '1.5px',
-        }}
-      >
-        {Array(cols * rows).fill(0).map((_, i) => (
-          <div
-            key={i}
-            style={{
-              width: 7,
-              height: 7,
-              borderRadius: 2,
-              backgroundColor: isActive ? '#3b82f6' : 'rgba(100,116,139,0.5)',
-            }}
-          />
-        ))}
-      </div>
-      <span className={`text-[10px] font-medium leading-none ${isActive ? 'text-blue-500' : 'text-zinc-400'}`}>
-        {label}
-      </span>
-    </button>
-  )
-}
-
-export default function FloatingTray({ selectedCard, onResize, onRemove, dispatch }) {
+export default function FloatingTray({ selectedCard, onRemove, dispatch }) {
   const isVisible = selectedCard !== null
-  const currentBento = selectedCard?.bento ?? '1x1'
   const fileInputRef = useRef(null)
 
   function handleImageUpload(e) {
@@ -125,23 +70,6 @@ export default function FloatingTray({ selectedCard, onResize, onRemove, dispatc
         />
       </div>
 
-      {/* Divider */}
-      <div className="w-px h-8 bg-zinc-200 mx-1" />
-
-      {/* Size presets */}
-      <div className="flex items-center gap-0.5 overflow-x-auto">
-        {PRESETS.map((preset) => {
-          const bentoStr = formatBento(preset.cols, preset.rows)
-          return (
-            <PresetButton
-              key={bentoStr}
-              preset={preset}
-              isActive={currentBento === bentoStr}
-              onClick={() => selectedCard && onResize(selectedCard.id, bentoStr)}
-            />
-          )
-        })}
-      </div>
     </div>
   )
 }

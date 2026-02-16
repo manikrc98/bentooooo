@@ -14,14 +14,14 @@ export default function TopBar({ mode, isDirty, onSave, onReset, dispatch }) {
       <div className="relative flex items-center bg-zinc-100 rounded-xl p-1 gap-0.5">
         {/* Sliding indicator */}
         <div
-          className={`absolute top-1 h-[calc(100%-8px)] w-[calc(50%-4px)] rounded-lg bg-white shadow-sm
-            transition-transform duration-200 ease-out
-            ${mode === 'preview' ? 'translate-x-[calc(100%+4px)]' : 'translate-x-0'}
+          className={`absolute top-1 h-[calc(100%-8px)] w-20 rounded-lg bg-white shadow-sm
+            transition-all duration-200 ease-out
+            ${mode === 'preview' ? 'translate-x-[calc(100%+2px)]' : 'translate-x-0'}
           `}
           style={{ left: 4 }}
         />
         <button
-          className={`relative z-10 px-4 py-1.5 rounded-lg text-xs font-medium transition-colors
+          className={`relative z-10 w-20 py-1.5 rounded-lg text-xs font-medium text-center transition-colors
             ${mode === 'edit' ? 'text-zinc-800' : 'text-zinc-400 hover:text-zinc-600'}
           `}
           onClick={() => dispatch({ type: SET_MODE, payload: 'edit' })}
@@ -29,7 +29,7 @@ export default function TopBar({ mode, isDirty, onSave, onReset, dispatch }) {
           Edit
         </button>
         <button
-          className={`relative z-10 px-4 py-1.5 rounded-lg text-xs font-medium transition-colors
+          className={`relative z-10 w-20 py-1.5 rounded-lg text-xs font-medium text-center transition-colors
             ${mode === 'preview' ? 'text-zinc-800' : 'text-zinc-400 hover:text-zinc-600'}
           `}
           onClick={() => dispatch({ type: SET_MODE, payload: 'preview' })}

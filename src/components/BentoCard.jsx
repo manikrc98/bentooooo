@@ -1,7 +1,53 @@
-import { useRef } from 'react'
-import { ImagePlus, GripVertical } from 'lucide-react'
-import { UPDATE_CARD_CONTENT } from '../store/cardStore.js'
-import { clampBento } from '../utils/bentoDimensions.js'
+import { useState, useCallback } from 'react'
+import { GripVertical } from 'lucide-react'
+import { UPDATE_CARD_CONTENT, RESIZE_CARD } from '../store/cardStore.js'
+import { clampBento, parseBento, formatBento } from '../utils/bentoDimensions.js'
+
+const MAX_RESIZE_ROWS = 4
+
+function ResizeGrid({ currentBento, maxColumns, onResize }) {
+  const { cols: currentCols, rows: currentRows } = parseBento(currentBento)
+  const [hoverSize, setHoverSize] = useState(null)
+
+  const displayCols = hoverSize ? hoverSize.col : currentCols
+  const displayRows = hoverSize ? hoverSize.row : currentRows
+  const label = `${displayCols}\u00D7${displayRows}`
+
+  return (
+    <div
+      className="absolute inset-0 flex flex-col items-center justify-center z-20 rounded-2xl
+        outline-2 outline-dashed outline-zinc-300 -outline-offset-2"
+      style={{ background: 'rgba(255,255,255,0.5)', backdropFilter: 'blur(2px)' }}
+    >
+      <div
+        className="grid gap-1"
+        style={{ gridTemplateColumns: `repeat(${maxColumns}, 1fr)`, width: '60%', maxWidth: 140 }}
+        onMouseLeave={() => setHoverSize(null)}
+      >
+        {Array.from({ length: MAX_RESIZE_ROWS }, (_, r) =>
+          Array.from({ length: maxColumns }, (_, c) => {
+            const row = r + 1
+            const col = c + 1
+            const isHighlighted = col <= displayCols && row <= displayRows
+            return (
+              <div
+                key={`${row}-${col}`}
+                className="aspect-square rounded-sm cursor-pointer transition-colors duration-100"
+                style={{ background: isHighlighted ? '#60a5fa' : 'rgba(0,0,0,0.1)' }}
+                onMouseEnter={() => setHoverSize({ col, row })}
+                onClick={e => {
+                  e.stopPropagation()
+                  onResize(formatBento(col, row))
+                }}
+              />
+            )
+          })
+        )}
+      </div>
+      <span className="text-black/50 text-xs font-medium mt-1.5 select-none">{label}</span>
+    </div>
+  )
+}
 
 export default function BentoCard({
   card, maxColumns, isSelected, isEditMode, onSelect, dispatch,
@@ -9,7 +55,11 @@ export default function BentoCard({
 }) {
   const { id, bento, content } = card
   const { imageUrl, title, bgColor, textColor, linkUrl } = content
-  const fileInputRef = useRef(null)
+  const [isHovered, setIsHovered] = useState(false)
+
+  const handleResize = useCallback((newBento) => {
+    dispatch({ type: RESIZE_CARD, payload: { id, bento: newBento } })
+  }, [dispatch, id])
 
   function handleImageUpload(e) {
     const file = e.target.files?.[0]
@@ -43,6 +93,8 @@ export default function BentoCard({
         backgroundPosition: 'center',
       }}
       onClick={() => isEditMode && onSelect(id)}
+      onMouseEnter={() => isEditMode && setIsHovered(true)}
+      onMouseLeave={() => isEditMode && setIsHovered(false)}
     >
       {/* Dark gradient overlay only when image is present */}
       {imageUrl && (
@@ -87,42 +139,33 @@ export default function BentoCard({
         <div className={`absolute inset-0 rounded-2xl transition-all duration-150
           ${isSelected ? 'ring-[2.5px] ring-blue-400' : 'ring-0 hover:ring-[1.5px] hover:ring-blue-300/50'}
         `}>
-          {/* Drag handle */}
-          <div
-            onPointerDown={(e) => {
-              e.stopPropagation()
-              e.preventDefault()
-              onDragStart(index, e)
-            }}
-            className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center
-              rounded-lg bg-black/15 backdrop-blur-sm text-black/50
-              hover:bg-black/25 hover:text-black/80 transition-all cursor-grab active:cursor-grabbing z-10
-              opacity-0 group-hover:opacity-100"
-            style={{ color: imageUrl ? 'rgba(255,255,255,0.7)' : undefined }}
-            title="Drag to reorder"
-          >
-            <GripVertical size={13} />
-          </div>
+          {/* Drag handle – hidden while resize grid is showing */}
+          {!isHovered && (
+            <div
+              onPointerDown={(e) => {
+                e.stopPropagation()
+                e.preventDefault()
+                onDragStart(index, e)
+              }}
+              className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center
+                rounded-lg bg-black/15 backdrop-blur-sm text-black/50
+                hover:bg-black/25 hover:text-black/80 transition-all cursor-grab active:cursor-grabbing z-10
+                opacity-0 group-hover:opacity-100"
+              style={{ color: imageUrl ? 'rgba(255,255,255,0.7)' : undefined }}
+              title="Drag to reorder"
+            >
+              <GripVertical size={13} />
+            </div>
+          )}
 
-          {/* Image upload button */}
-          <button
-            className="absolute top-2 left-2 w-7 h-7 flex items-center justify-center
-              rounded-lg bg-black/15 backdrop-blur-sm text-black/50
-              hover:bg-black/25 hover:text-black/80 transition-all
-              opacity-0 group-hover:opacity-100"
-            style={{ color: imageUrl ? 'rgba(255,255,255,0.7)' : undefined }}
-            onClick={e => { e.stopPropagation(); fileInputRef.current?.click() }}
-            title="Upload image"
-          >
-            <ImagePlus size={13} />
-          </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleImageUpload}
-          />
+          {/* Resize grid overlay on hover */}
+          {isHovered && (
+            <ResizeGrid
+              currentBento={clampBento(bento, maxColumns)}
+              maxColumns={maxColumns}
+              onResize={handleResize}
+            />
+          )}
         </div>
       )}
     </Tag>

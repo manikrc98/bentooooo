@@ -129,7 +129,6 @@ export default function BioSection({ bio, mode, dispatch }) {
           {isEditMode ? (
             <input
               className="w-full text-2xl font-bold text-zinc-800 bg-transparent outline-none
-                border-b-2 border-transparent focus:border-blue-300 transition-colors
                 placeholder:text-zinc-300"
               placeholder="Your name"
               value={bio.name}
@@ -145,7 +144,6 @@ export default function BioSection({ bio, mode, dispatch }) {
           {isEditMode ? (
             <textarea
               className="w-full text-sm text-zinc-500 bg-transparent outline-none resize-none
-                border-b-2 border-transparent focus:border-blue-300 transition-colors
                 placeholder:text-zinc-300 leading-relaxed"
               placeholder="Short description"
               rows={2}
@@ -177,7 +175,6 @@ export default function BioSection({ bio, mode, dispatch }) {
                 <div className="space-y-1">
                   <input
                     className="w-full text-xs font-semibold text-zinc-400 bg-transparent outline-none
-                      border-b border-transparent focus:border-blue-300 transition-colors
                       placeholder:text-zinc-300 uppercase tracking-wide"
                     placeholder="Heading"
                     value={block.heading}
@@ -185,7 +182,6 @@ export default function BioSection({ bio, mode, dispatch }) {
                   />
                   <textarea
                     className="w-full text-sm text-zinc-700 bg-transparent outline-none resize-none
-                      border-b border-transparent focus:border-blue-300 transition-colors
                       placeholder:text-zinc-300 leading-relaxed"
                     placeholder="Body text"
                     rows={3}

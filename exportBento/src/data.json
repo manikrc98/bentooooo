@@ -28,7 +28,7 @@
         },
         {
           "id": "card-1771210535652-671dd",
-          "bento": "2x1",
+          "bento": "2x2",
           "content": {
             "imageUrl": "",
             "title": "",
@@ -68,5 +68,5 @@
     "cellGap": 8,
     "aspectRatio": 1
   },
-  "savedAt": "2026-02-16T02:58:00.001Z"
+  "savedAt": "2026-02-16T03:24:47.232Z"
 }

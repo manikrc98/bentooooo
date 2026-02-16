@@ -1,5 +1,5 @@
 import { useReducer, useState } from 'react'
-import { reducer, initialState, REMOVE_CARD, RESIZE_CARD, RESET_STATE } from './store/cardStore.js'
+import { reducer, initialState, REMOVE_CARD, RESET_STATE } from './store/cardStore.js'
 import { useCardSelection } from './hooks/useCardSelection.js'
 import { usePersistence } from './hooks/usePersistence.js'
 import TopBar from './components/TopBar.jsx'
@@ -20,10 +20,6 @@ export default function App() {
   const selectedCard = selectedCardId
     ? sections.flatMap(s => s.cards).find(c => c.id === selectedCardId) ?? null
     : null
-
-  function handleResize(id, bento) {
-    dispatch({ type: RESIZE_CARD, payload: { id, bento } })
-  }
 
   function handleRemove(id) {
     dispatch({ type: REMOVE_CARD, payload: id })
@@ -64,7 +60,6 @@ export default function App() {
 
       <FloatingTray
         selectedCard={mode === 'edit' ? selectedCard : null}
-        onResize={handleResize}
         onRemove={handleRemove}
         dispatch={dispatch}
       />
