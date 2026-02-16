@@ -1,22 +1,41 @@
 import { useRef } from 'react'
-import { Trash2, ImagePlus, Link } from 'lucide-react'
+import { Trash2, ImagePlus, Video, Type, Link } from 'lucide-react'
 import { UPDATE_CARD_CONTENT } from '../store/cardStore.js'
 
 export default function FloatingTray({ selectedCard, onRemove, dispatch }) {
   const isVisible = selectedCard !== null
-  const fileInputRef = useRef(null)
+  const imageInputRef = useRef(null)
+  const videoInputRef = useRef(null)
+
+  const contentType = selectedCard?.content?.type || 'image'
 
   function handleImageUpload(e) {
     const file = e.target.files?.[0]
     if (!file || !selectedCard) return
     const url = URL.createObjectURL(file)
-    dispatch({ type: UPDATE_CARD_CONTENT, payload: { id: selectedCard.id, updates: { imageUrl: url } } })
+    dispatch({ type: UPDATE_CARD_CONTENT, payload: { id: selectedCard.id, updates: { type: 'image', imageUrl: url, videoUrl: '' } } })
+  }
+
+  function handleVideoUpload(e) {
+    const file = e.target.files?.[0]
+    if (!file || !selectedCard) return
+    const url = URL.createObjectURL(file)
+    dispatch({ type: UPDATE_CARD_CONTENT, payload: { id: selectedCard.id, updates: { type: 'video', videoUrl: url, imageUrl: '' } } })
+  }
+
+  function switchToText() {
+    if (!selectedCard) return
+    dispatch({ type: UPDATE_CARD_CONTENT, payload: { id: selectedCard.id, updates: { type: 'text', imageUrl: '', videoUrl: '' } } })
   }
 
   function handleLinkChange(e) {
     if (!selectedCard) return
     dispatch({ type: UPDATE_CARD_CONTENT, payload: { id: selectedCard.id, updates: { linkUrl: e.target.value } } })
   }
+
+  const btnBase = "flex items-center justify-center w-9 h-9 rounded-xl transition-all active:scale-95"
+  const btnActive = "bg-blue-50 text-blue-500"
+  const btnDefault = "text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600"
 
   return (
     <div
@@ -43,19 +62,47 @@ export default function FloatingTray({ selectedCard, onRemove, dispatch }) {
 
       {/* Image upload */}
       <button
-        className="flex items-center justify-center w-9 h-9 rounded-xl text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 active:scale-95 transition-all"
+        className={`${btnBase} ${contentType === 'image' ? btnActive : btnDefault}`}
         title="Upload image"
-        onClick={() => fileInputRef.current?.click()}
+        onClick={() => imageInputRef.current?.click()}
       >
         <ImagePlus size={16} />
       </button>
       <input
-        ref={fileInputRef}
+        ref={imageInputRef}
         type="file"
         accept="image/*"
         className="hidden"
         onChange={handleImageUpload}
       />
+
+      {/* Video upload */}
+      <button
+        className={`${btnBase} ${contentType === 'video' ? btnActive : btnDefault}`}
+        title="Upload video"
+        onClick={() => videoInputRef.current?.click()}
+      >
+        <Video size={16} />
+      </button>
+      <input
+        ref={videoInputRef}
+        type="file"
+        accept="video/*"
+        className="hidden"
+        onChange={handleVideoUpload}
+      />
+
+      {/* Text mode */}
+      <button
+        className={`${btnBase} ${contentType === 'text' ? btnActive : btnDefault}`}
+        title="Text card"
+        onClick={switchToText}
+      >
+        <Type size={16} />
+      </button>
+
+      {/* Divider */}
+      <div className="w-px h-8 bg-zinc-200 mx-1" />
 
       {/* Hyperlink input */}
       <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-zinc-50 border border-zinc-200">

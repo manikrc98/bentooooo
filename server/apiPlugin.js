@@ -13,32 +13,16 @@ function ensureDirs() {
   fs.mkdirSync(ASSETS_DIR, { recursive: true })
 }
 
-/** Collect all image URL strings from the state object */
-function collectImageUrls(state) {
-  const urls = new Set()
-
-  // Card images
-  if (state.sections) {
-    for (const section of state.sections) {
-      for (const card of section.cards || []) {
-        if (card.content?.imageUrl) urls.add(card.content.imageUrl)
-      }
-    }
-  }
-
-  // Bio avatar
-  if (state.bio?.avatar) urls.add(state.bio.avatar)
-
-  return urls
-}
-
-/** Replace image URLs in state, mutating in place */
+/** Replace media URLs in state, mutating in place */
 function replaceUrls(state, urlMap) {
   if (state.sections) {
     for (const section of state.sections) {
       for (const card of section.cards || []) {
         if (card.content?.imageUrl && urlMap.has(card.content.imageUrl)) {
           card.content.imageUrl = urlMap.get(card.content.imageUrl)
+        }
+        if (card.content?.videoUrl && urlMap.has(card.content.videoUrl)) {
+          card.content.videoUrl = urlMap.get(card.content.videoUrl)
         }
       }
     }
@@ -58,6 +42,9 @@ function transformForEditor(state) {
       for (const card of section.cards || []) {
         if (card.content?.imageUrl?.startsWith('/assets/')) {
           card.content.imageUrl = '/api' + card.content.imageUrl
+        }
+        if (card.content?.videoUrl?.startsWith('/assets/')) {
+          card.content.videoUrl = '/api' + card.content.videoUrl
         }
       }
     }
@@ -141,7 +128,7 @@ export function apiPlugin() {
           return
         }
         const ext = path.extname(filePath).slice(1)
-        const mimeTypes = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', gif: 'image/gif', webp: 'image/webp', svg: 'image/svg+xml' }
+        const mimeTypes = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', gif: 'image/gif', webp: 'image/webp', svg: 'image/svg+xml', mp4: 'video/mp4', webm: 'video/webm', ogg: 'video/ogg', mov: 'video/quicktime' }
         res.setHeader('Content-Type', mimeTypes[ext] || 'application/octet-stream')
         fs.createReadStream(filePath).pipe(res)
       })

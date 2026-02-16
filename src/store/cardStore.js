@@ -25,12 +25,15 @@ function nextColor() {
   return COLORS[colorIndex++ % COLORS.length]
 }
 
-function makeCard(bento = '1x1', id) {
+function makeCard(bento = '1x1', id, type = 'image') {
   return {
     id: id || `card-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     bento,
     content: {
+      type,          // 'image' | 'video' | 'text'
       imageUrl: '',
+      videoUrl: '',
+      text: '',
       title: '',
       bgColor: nextColor(),
       textColor: '#374151',

@@ -7,8 +7,10 @@ function collectBlobUrls(state) {
 
   for (const section of state.sections || []) {
     for (const card of section.cards || []) {
-      const url = card.content?.imageUrl
-      if (url && url.startsWith('blob:')) urls.push(url)
+      const imgUrl = card.content?.imageUrl
+      if (imgUrl && imgUrl.startsWith('blob:')) urls.push(imgUrl)
+      const vidUrl = card.content?.videoUrl
+      if (vidUrl && vidUrl.startsWith('blob:')) urls.push(vidUrl)
     }
   }
 
@@ -27,7 +29,8 @@ async function blobToBase64(blobUrl) {
   const base64 = btoa(
     new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
   )
-  return { data: base64, type: blob.type, name: 'img' }
+  const isVideo = blob.type.startsWith('video/')
+  return { data: base64, type: blob.type, name: isVideo ? 'vid' : 'img' }
 }
 
 export function usePersistence(state, dispatch) {

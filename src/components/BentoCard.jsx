@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { GripVertical } from 'lucide-react'
 import { UPDATE_CARD_CONTENT, RESIZE_CARD } from '../store/cardStore.js'
 import { clampBento, parseBento, formatBento } from '../utils/bentoDimensions.js'
@@ -49,28 +49,193 @@ function ResizeGrid({ currentBento, maxColumns, onResize }) {
   )
 }
 
+/* ── Auto-scaling text component (preview mode) ─────────────────── */
+function AutoScaleText({ text, cardRef, textColor }) {
+  const measureRef = useRef(null)
+  const [fontSize, setFontSize] = useState(120)
+
+  const recalc = useCallback(() => {
+    if (!cardRef.current || !measureRef.current || !text) return
+    const card = cardRef.current
+    const pad = 24
+    const maxW = card.offsetWidth - pad * 2
+    const maxH = card.offsetHeight - pad * 2
+    if (maxW <= 0 || maxH <= 0) return
+
+    const el = measureRef.current
+    el.style.width = `${maxW}px`
+    el.style.maxWidth = `${maxW}px`
+    el.textContent = text
+
+    let lo = 12, hi = 120, best = 12
+    while (lo <= hi) {
+      const mid = Math.floor((lo + hi) / 2)
+      el.style.fontSize = `${mid}px`
+      if (el.scrollWidth <= maxW && el.scrollHeight <= maxH) {
+        best = mid
+        lo = mid + 1
+      } else {
+        hi = mid - 1
+      }
+    }
+    setFontSize(best)
+  }, [text, cardRef])
+
+  useEffect(() => { recalc() }, [recalc])
+
+  useEffect(() => {
+    if (!cardRef.current) return
+    const observer = new ResizeObserver(recalc)
+    observer.observe(cardRef.current)
+    return () => observer.disconnect()
+  }, [recalc, cardRef])
+
+  if (!text) return null
+
+  return (
+    <>
+      <div
+        ref={measureRef}
+        className="font-semibold leading-tight whitespace-pre-wrap"
+        style={{
+          position: 'fixed',
+          top: -9999,
+          left: -9999,
+          visibility: 'hidden',
+          pointerEvents: 'none',
+          overflowWrap: 'break-word',
+        }}
+      />
+      <div
+        className="absolute inset-0 flex items-center justify-center p-6 font-semibold leading-tight overflow-hidden whitespace-pre-wrap text-center"
+        style={{
+          fontSize: `${fontSize}px`,
+          color: textColor,
+          overflowWrap: 'break-word',
+        }}
+      >
+        {text}
+      </div>
+    </>
+  )
+}
+
+/* ── Auto-scaling editable textarea ────────────────────────────── */
+function AutoScaleTextarea({ text, cardRef, textColor, onChange }) {
+  const textareaRef = useRef(null)
+  const measureRef = useRef(null)
+  const [fontSize, setFontSize] = useState(120)
+
+  const recalc = useCallback(() => {
+    if (!cardRef.current || !measureRef.current) return
+    const card = cardRef.current
+    const pad = 24
+    const maxW = card.offsetWidth - pad * 2
+    const maxH = card.offsetHeight - pad * 2
+    if (maxW <= 0 || maxH <= 0) return
+
+    const el = measureRef.current
+    el.style.width = `${maxW}px`
+    el.style.maxWidth = `${maxW}px`
+    el.textContent = text || 'M'
+
+    let lo = 12, hi = 120, best = 12
+    while (lo <= hi) {
+      const mid = Math.floor((lo + hi) / 2)
+      el.style.fontSize = `${mid}px`
+      if (el.scrollWidth <= maxW && el.scrollHeight <= maxH) {
+        best = mid
+        lo = mid + 1
+      } else {
+        hi = mid - 1
+      }
+    }
+    setFontSize(best)
+  }, [text, cardRef])
+
+  useEffect(() => { recalc() }, [recalc])
+
+  useEffect(() => {
+    if (!cardRef.current) return
+    const observer = new ResizeObserver(recalc)
+    observer.observe(cardRef.current)
+    return () => observer.disconnect()
+  }, [recalc, cardRef])
+
+  // Auto-adjust textarea height whenever fontSize or text changes (not just on user input)
+  useEffect(() => {
+    const ta = textareaRef.current
+    if (!ta) return
+    ta.style.height = 'auto'
+    ta.style.height = ta.scrollHeight + 'px'
+  }, [fontSize, text])
+
+  return (
+    <>
+      <div
+        ref={measureRef}
+        className="font-semibold leading-tight whitespace-pre-wrap"
+        style={{
+          position: 'fixed',
+          top: -9999,
+          left: -9999,
+          visibility: 'hidden',
+          pointerEvents: 'none',
+          overflowWrap: 'break-word',
+        }}
+      />
+      <div className="absolute inset-0 flex items-center justify-center p-6">
+        <textarea
+          ref={textareaRef}
+          className="w-full bg-transparent resize-none outline-none border-0 font-semibold leading-tight text-center"
+          style={{
+            color: textColor,
+            fontSize: `${fontSize}px`,
+            overflowWrap: 'break-word',
+            maxHeight: '100%',
+            overflow: 'hidden',
+          }}
+          rows={1}
+          placeholder="Type something…"
+          value={text}
+          onChange={e => {
+            onChange(e.target.value)
+          }}
+          onClick={e => e.stopPropagation()}
+        />
+      </div>
+    </>
+  )
+}
+
 export default function BentoCard({
   card, maxColumns, isSelected, isEditMode, onSelect, dispatch,
   index, onDragStart, isDragging, isDropTarget,
 }) {
   const { id, bento, content } = card
-  const { imageUrl, title, bgColor, textColor, linkUrl } = content
+  const { type = 'image', imageUrl, videoUrl, text, title, bgColor, textColor, linkUrl } = content
   const [isHovered, setIsHovered] = useState(false)
+  const [shiftHeld, setShiftHeld] = useState(false)
+  const cardRef = useRef(null)
+
+  useEffect(() => {
+    if (!isEditMode || type !== 'text') return
+    const down = (e) => { if (e.key === 'Shift') setShiftHeld(true) }
+    const up = (e) => { if (e.key === 'Shift') setShiftHeld(false) }
+    window.addEventListener('keydown', down)
+    window.addEventListener('keyup', up)
+    return () => { window.removeEventListener('keydown', down); window.removeEventListener('keyup', up) }
+  }, [isEditMode, type])
 
   const handleResize = useCallback((newBento) => {
     dispatch({ type: RESIZE_CARD, payload: { id, bento: newBento } })
   }, [dispatch, id])
 
-  function handleImageUpload(e) {
-    const file = e.target.files?.[0]
-    if (!file) return
-    const url = URL.createObjectURL(file)
-    dispatch({ type: UPDATE_CARD_CONTENT, payload: { id, updates: { imageUrl: url } } })
-  }
-
   function handleTitleChange(e) {
     dispatch({ type: UPDATE_CARD_CONTENT, payload: { id, updates: { title: e.target.value } } })
   }
+
+  const hasMedia = type === 'image' ? imageUrl : type === 'video' ? videoUrl : false
 
   const Tag = (!isEditMode && linkUrl) ? 'a' : 'div'
   const linkProps = (!isEditMode && linkUrl)
@@ -79,6 +244,7 @@ export default function BentoCard({
 
   return (
     <Tag
+      ref={cardRef}
       data-bento={clampBento(bento, maxColumns)}
       data-card-id={id}
       {...linkProps}
@@ -88,7 +254,7 @@ export default function BentoCard({
       `}
       style={{
         backgroundColor: bgColor,
-        backgroundImage: imageUrl ? `url(${imageUrl})` : 'none',
+        backgroundImage: (type === 'image' && imageUrl) ? `url(${imageUrl})` : 'none',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }}
@@ -96,8 +262,38 @@ export default function BentoCard({
       onMouseEnter={() => isEditMode && setIsHovered(true)}
       onMouseLeave={() => isEditMode && setIsHovered(false)}
     >
-      {/* Dark gradient overlay only when image is present */}
-      {imageUrl && (
+      {/* Video background */}
+      {type === 'video' && videoUrl && (
+        <video
+          src={videoUrl}
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+        />
+      )}
+
+      {/* Auto-scaling text */}
+      {type === 'text' && (
+        <>
+          {isEditMode ? (
+            <AutoScaleTextarea
+              text={text || ''}
+              cardRef={cardRef}
+              textColor={textColor}
+              onChange={val => {
+                dispatch({ type: UPDATE_CARD_CONTENT, payload: { id, updates: { text: val } } })
+              }}
+            />
+          ) : (
+            <AutoScaleText text={text} cardRef={cardRef} textColor={textColor} />
+          )}
+        </>
+      )}
+
+      {/* Dark gradient overlay only when media is present */}
+      {hasMedia && (
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
       )}
 
@@ -111,62 +307,71 @@ export default function BentoCard({
         />
       )}
 
-      {/* Floating caption */}
-      <div className={`absolute bottom-0 left-0 right-0 p-3 ${isEditMode ? 'z-10' : ''}`}>
-        {isEditMode ? (
-          <input
-            className="bg-transparent font-medium text-sm outline-none border-0 w-full placeholder:opacity-30"
-            style={{ color: imageUrl ? '#ffffff' : textColor }}
-            placeholder="Caption…"
-            value={title}
-            onChange={handleTitleChange}
-            onClick={e => e.stopPropagation()}
-          />
-        ) : (
-          title && (
-            <span
-              className="inline-block text-sm font-medium px-2.5 py-1 rounded-full backdrop-blur-sm bg-white/90 shadow-sm"
-              style={{ color: textColor }}
-            >
-              {title}
-            </span>
-          )
-        )}
-      </div>
+      {/* Floating caption — hidden for text cards */}
+      {type !== 'text' && (
+        <div className={`absolute bottom-0 left-0 right-0 p-3 ${isEditMode ? 'z-30' : ''}`}>
+          {isEditMode ? (
+            <input
+              className="bg-transparent font-medium text-sm outline-none border-0 w-full placeholder:opacity-30"
+              style={{ color: hasMedia ? '#ffffff' : textColor }}
+              placeholder="Caption…"
+              value={title}
+              onChange={handleTitleChange}
+              onClick={e => e.stopPropagation()}
+            />
+          ) : (
+            title && (
+              <span
+                className="inline-block text-sm font-medium px-2.5 py-1 rounded-full backdrop-blur-sm bg-white/90 shadow-sm"
+                style={{ color: textColor }}
+              >
+                {title}
+              </span>
+            )
+          )}
+        </div>
+      )}
 
-      {/* Edit mode overlay: selection ring, drag handle, image upload */}
+      {/* Edit mode overlay: selection ring, drag handle, resize grid */}
       {isEditMode && (
         <div className={`absolute inset-0 rounded-2xl transition-all duration-150
           ${isSelected ? 'ring-[2.5px] ring-blue-400' : 'ring-0 hover:ring-[1.5px] hover:ring-blue-300/50'}
+          ${type === 'text' && !shiftHeld ? 'pointer-events-none' : ''}
         `}>
-          {/* Drag handle – hidden while resize grid is showing */}
-          {!isHovered && (
-            <div
-              onPointerDown={(e) => {
-                e.stopPropagation()
-                e.preventDefault()
-                onDragStart(index, e)
-              }}
-              className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center
-                rounded-lg bg-black/15 backdrop-blur-sm text-black/50
-                hover:bg-black/25 hover:text-black/80 transition-all cursor-grab active:cursor-grabbing z-10
-                opacity-0 group-hover:opacity-100"
-              style={{ color: imageUrl ? 'rgba(255,255,255,0.7)' : undefined }}
-              title="Drag to reorder"
-            >
-              <GripVertical size={13} />
-            </div>
-          )}
+          {/* Drag handle – always visible on hover, above resize grid */}
+          <div
+            onPointerDown={(e) => {
+              e.stopPropagation()
+              e.preventDefault()
+              onDragStart(index, e)
+            }}
+            className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center
+              rounded-lg bg-black/15 backdrop-blur-sm text-black/50
+              hover:bg-black/25 hover:text-black/80 transition-all cursor-grab active:cursor-grabbing z-30
+              opacity-0 group-hover:opacity-100 pointer-events-auto"
+            style={{ color: hasMedia ? 'rgba(255,255,255,0.7)' : undefined }}
+            title="Drag to reorder"
+          >
+            <GripVertical size={13} />
+          </div>
 
-          {/* Resize grid overlay on hover */}
-          {isHovered && (
+          {/* Resize grid overlay on hover — for text cards only when Shift is held */}
+          {isHovered && (type !== 'text' || shiftHeld) && (
             <ResizeGrid
               currentBento={clampBento(bento, maxColumns)}
               maxColumns={maxColumns}
               onResize={handleResize}
             />
           )}
+
         </div>
+      )}
+
+      {/* Hint for text cards: hold shift to resize — outside overlay so it doesn't interfere */}
+      {isEditMode && isHovered && type === 'text' && !shiftHeld && (
+        <span className="absolute bottom-1.5 left-1/2 -translate-x-1/2 text-[10px] text-black/30 select-none pointer-events-none z-30">
+          Hold Shift to resize
+        </span>
       )}
     </Tag>
   )
