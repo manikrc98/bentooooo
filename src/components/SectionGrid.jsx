@@ -80,21 +80,11 @@ export default function SectionGrid({ section, state, dispatch, selectedCardId, 
     const offsetY = e.clientY - rect.top
 
     const ghost = cardEl.cloneNode(true)
-    ghost.style.cssText = `
-      position: fixed;
-      width: ${rect.width}px;
-      height: ${rect.height}px;
-      left: ${rect.left}px;
-      top: ${rect.top}px;
-      z-index: 9999;
-      pointer-events: none;
-      opacity: 1;
-      transform: scale(1.03);
-      box-shadow: 0 16px 32px rgba(0,0,0,0.15);
-      border-radius: 16px;
-      overflow: hidden;
-      transition: box-shadow 0.15s ease;
-    `
+    ghost.classList.add('drag-ghost')
+    ghost.style.width = `${rect.width}px`
+    ghost.style.height = `${rect.height}px`
+    ghost.style.left = `${rect.left}px`
+    ghost.style.top = `${rect.top}px`
     document.body.appendChild(ghost)
 
     const draggedId = cardsRef.current[index].id
