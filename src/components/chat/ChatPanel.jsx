@@ -27,6 +27,7 @@ export default function ChatPanel({
   const providers = getProviderList()
   const hasProvider = !!activeProvider
   const availableModels = activeProvider ? MODEL_OPTIONS[activeProvider] || [] : []
+  const selectClass = "appearance-none text-xs bg-zinc-100 border border-zinc-200 rounded-lg pl-2 pr-6 py-1 text-zinc-600 cursor-pointer outline-none hover:bg-zinc-200 transition-colors"
 
   return (
     <div className="flex flex-col h-full bg-zinc-50">
@@ -54,7 +55,7 @@ export default function ChatPanel({
                 onSetProvider(e.target.value || null)
                 setSelectedModel(null) // Reset model when provider changes
               }}
-              className="appearance-none text-xs bg-zinc-100 border border-zinc-200 rounded-lg pl-2 pr-6 py-1 text-zinc-600 cursor-pointer outline-none hover:bg-zinc-200 transition-colors"
+              className={selectClass}
             >
               <option value="">No provider</option>
               {providers.map(p => (
@@ -72,7 +73,7 @@ export default function ChatPanel({
               <select
                 value={selectedModel || ''}
                 onChange={e => setSelectedModel(e.target.value || null)}
-                className="appearance-none text-xs bg-zinc-100 border border-zinc-200 rounded-lg pl-2 pr-6 py-1 text-zinc-600 cursor-pointer outline-none hover:bg-zinc-200 transition-colors"
+                className={selectClass}
               >
                 <option value="">Default model</option>
                 {availableModels.map(model => (
