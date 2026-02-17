@@ -311,7 +311,7 @@ export default function BioSection({ bio, mode, dispatch }) {
                   />
                   <div className="relative">
                     {/* Link preview layer — behind textarea */}
-                    <div className="absolute inset-0 text-sm text-zinc-700 leading-relaxed whitespace-pre-line pointer-events-none overflow-hidden rounded"
+                    <div className="bio-body absolute inset-0 text-sm text-zinc-700 leading-relaxed whitespace-pre-line pointer-events-none overflow-hidden rounded"
                       dangerouslySetInnerHTML={{ __html: renderBodyAsHtml(block.body, block.links) }}
                     />
                     <textarea
