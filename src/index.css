@@ -261,3 +261,40 @@
 .quota-text-xs {
   font-size: 11px;
 }
+
+/* ── Bio hyperlinks ──────────────────────────────────────────── */
+.bio-body a {
+  color: #3b82f6;
+  text-decoration: underline;
+  text-decoration-color: #3b82f6;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+}
+
+.bio-body a:hover {
+  color: #1d4ed8;
+  text-decoration-color: #1d4ed8;
+}
+
+.bio-body a:visited {
+  color: #7c3aed;
+  text-decoration-color: #7c3aed;
+}
+
+/* ── Bio link tray ───────────────────────────────────────────── */
+.bio-link-tray {
+  transform: translateX(-50%);
+  animation: slideUp 0.2s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}

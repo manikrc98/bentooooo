@@ -1,14 +1,16 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Plus, Trash2, ImagePlus, X } from 'lucide-react'
 import { SET_BIO, CLEAR_BIO } from '../store/cardStore.js'
 import { compressImage } from '../utils/imageCompression.js'
 import ConfirmModal from './ConfirmModal.jsx'
+import BioLinkTray from './BioLinkTray.jsx'
 
 function makeBioBlock() {
   return {
     id: crypto.randomUUID(),
     heading: '',
     body: '',
+    links: [], // Array of { start, end, url }
   }
 }
 
@@ -23,9 +25,24 @@ function makeBio() {
 
 export default function BioSection({ bio, mode, dispatch }) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [linkTray, setLinkTray] = useState({ visible: false, blockId: null, position: null, selectedText: '' })
   const avatarInputRef = useRef(null)
+  const textareaRefs = useRef({})
 
   const isEditMode = mode === 'edit'
+
+  // Restore text selection when link tray becomes visible
+  useEffect(() => {
+    if (linkTray.visible && linkTray.blockId && linkTray.selectionStart != null && linkTray.selectionEnd != null) {
+      const textarea = textareaRefs.current[linkTray.blockId]
+      if (textarea) {
+        setTimeout(() => {
+          textarea.setSelectionRange(linkTray.selectionStart, linkTray.selectionEnd)
+          textarea.focus()
+        }, 0)
+      }
+    }
+  }, [linkTray.visible, linkTray.blockId, linkTray.selectionStart, linkTray.selectionEnd])
 
   // No bio and not in edit mode — nothing to show
   if (!bio && !isEditMode) return null
@@ -84,6 +101,120 @@ export default function BioSection({ bio, mode, dispatch }) {
   function confirmDelete() {
     dispatch({ type: CLEAR_BIO })
     setShowDeleteConfirm(false)
+  }
+
+  // Helper: Find link at selection position
+  function findLinkAtSelection(links, start, end) {
+    return links.find(link => link.start === start && link.end === end)
+  }
+
+  // Helper: Add or update a link at the selection
+  function addLinkToBlock(blockId, start, end, url) {
+    const block = bio.blocks.find(b => b.id === blockId)
+    if (!block) return
+
+    // Initialize links if it doesn't exist
+    const currentLinks = block.links || []
+
+    // Remove any existing link at this position
+    const updatedLinks = currentLinks.filter(link => !(link.start === start && link.end === end))
+
+    // Add new link
+    updatedLinks.push({ start, end, url })
+
+    // Sort links by start position
+    updatedLinks.sort((a, b) => a.start - b.start)
+
+    dispatch({ type: SET_BIO, payload: { blocks: bio.blocks.map(b => b.id === blockId ? { ...b, links: updatedLinks } : b) } })
+  }
+
+  // Helper: Remove a link at the selection
+  function removeLinkFromBlock(blockId, start, end) {
+    const block = bio.blocks.find(b => b.id === blockId)
+    if (!block) return
+
+    const currentLinks = block.links || []
+    const updatedLinks = currentLinks.filter(link => !(link.start === start && link.end === end))
+    dispatch({ type: SET_BIO, payload: { blocks: bio.blocks.map(b => b.id === blockId ? { ...b, links: updatedLinks } : b) } })
+  }
+
+  // Helper: Convert plain text + links array to HTML
+  function renderBodyAsHtml(text, links) {
+    if (!links || links.length === 0) return text
+
+    // Sort links by start position
+    const sortedLinks = [...links].sort((a, b) => a.start - b.start)
+
+    let html = ''
+    let lastIndex = 0
+
+    for (const link of sortedLinks) {
+      // Add text before this link
+      html += text.substring(lastIndex, link.start)
+      // Add the link
+      const linkText = text.substring(link.start, link.end)
+      html += `<a href="${link.url}" target="_blank" rel="noopener noreferrer">${linkText}</a>`
+      lastIndex = link.end
+    }
+
+    // Add remaining text
+    html += text.substring(lastIndex)
+
+    return html
+  }
+
+  // Handle text selection in textarea
+  function handleTextSelection(blockId, e) {
+    if (!isEditMode) return
+
+    const textarea = e.target
+    const { selectionStart, selectionEnd } = textarea
+
+    if (selectionStart === selectionEnd) {
+      setLinkTray({ visible: false, blockId: null, position: null, selectedText: '' })
+      return
+    }
+
+    const block = bio.blocks.find(b => b.id === blockId)
+    if (!block) return
+
+    const selectedText = block.body.substring(selectionStart, selectionEnd)
+
+    // Find tray position relative to textarea
+    const rect = textarea.getBoundingClientRect()
+    const position = {
+      x: rect.left + window.scrollX + rect.width / 2,
+      y: rect.top + window.scrollY - 10,
+    }
+
+    // Check if selected text is already linked
+    const existingLink = findLinkAtSelection(block.links || [], selectionStart, selectionEnd)
+
+    setLinkTray({
+      visible: true,
+      blockId,
+      position,
+      selectedText,
+      selectionStart,
+      selectionEnd,
+      currentUrl: existingLink?.url,
+    })
+  }
+
+  function handleApplyLink(url) {
+    const { blockId, selectionStart, selectionEnd } = linkTray
+    addLinkToBlock(blockId, selectionStart, selectionEnd, url)
+    setLinkTray({ visible: false, blockId: null, position: null, selectedText: '' })
+  }
+
+  function handleRemoveLink() {
+    const { blockId, selectionStart, selectionEnd } = linkTray
+    removeLinkFromBlock(blockId, selectionStart, selectionEnd)
+    setLinkTray({ visible: false, blockId: null, position: null, selectedText: '' })
+  }
+
+  function closeLinkTray() {
+    setLinkTray({ visible: false, blockId: null, position: null, selectedText: '' })
   }
 
   return (
@@ -179,12 +310,14 @@ export default function BioSection({ bio, mode, dispatch }) {
                     onChange={e => updateBlock(block.id, 'heading', e.target.value)}
                   />
                   <textarea
+                    ref={el => { if (el) textareaRefs.current[block.id] = el }}
                     className="w-full text-sm text-zinc-700 bg-transparent outline-none resize-none
                       placeholder:text-zinc-300 leading-relaxed"
-                    placeholder="Body text"
+                    placeholder="Body text (select text to add links)"
                     rows={3}
                     value={block.body}
                     onChange={e => updateBlock(block.id, 'body', e.target.value)}
+                    onMouseUp={e => handleTextSelection(block.id, e)}
                   />
                 </div>
               ) : (
@@ -193,7 +326,7 @@ export default function BioSection({ bio, mode, dispatch }) {
                     <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wide mb-2">{block.heading}</h3>
                   )}
                   {block.body && (
-                    <p className="text-sm text-zinc-700 leading-relaxed whitespace-pre-line">{block.body}</p>
+                    <p className="bio-body text-sm text-zinc-700 leading-relaxed whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderBodyAsHtml(block.body, block.links) }} />
                   )}
                 </div>
               )}
@@ -214,6 +347,18 @@ export default function BioSection({ bio, mode, dispatch }) {
           </button>
         )}
       </div>
+
+      {/* Link tray */}
+      {linkTray.visible && (
+        <BioLinkTray
+          position={linkTray.position}
+          selectedText={linkTray.selectedText}
+          existingUrl={linkTray.currentUrl}
+          onApplyLink={handleApplyLink}
+          onRemoveLink={handleRemoveLink}
+          onClose={closeLinkTray}
+        />
+      )}
 
       {/* Delete confirmation modal */}
       {showDeleteConfirm && (
