@@ -309,16 +309,23 @@ export default function BioSection({ bio, mode, dispatch }) {
                     value={block.heading}
                     onChange={e => updateBlock(block.id, 'heading', e.target.value)}
                   />
-                  <textarea
-                    ref={el => { if (el) textareaRefs.current[block.id] = el }}
-                    className="w-full text-sm text-zinc-700 bg-transparent outline-none resize-none
-                      placeholder:text-zinc-300 leading-relaxed"
-                    placeholder="Body text (select text to add links)"
-                    rows={3}
-                    value={block.body}
-                    onChange={e => updateBlock(block.id, 'body', e.target.value)}
-                    onMouseUp={e => handleTextSelection(block.id, e)}
-                  />
+                  <div className="relative">
+                    {/* Link preview layer — behind textarea */}
+                    <div className="absolute inset-0 text-sm text-zinc-700 leading-relaxed whitespace-pre-line pointer-events-none overflow-hidden rounded"
+                      dangerouslySetInnerHTML={{ __html: renderBodyAsHtml(block.body, block.links) }}
+                    />
+                    <textarea
+                      ref={el => { if (el) textareaRefs.current[block.id] = el }}
+                      className="relative w-full text-sm bg-transparent outline-none resize-none
+                        placeholder:text-zinc-300 leading-relaxed"
+                      style={{ color: 'rgba(0,0,0,0)' }}
+                      placeholder="Body text (select text to add links)"
+                      rows={3}
+                      value={block.body}
+                      onChange={e => updateBlock(block.id, 'body', e.target.value)}
+                      onMouseUp={e => handleTextSelection(block.id, e)}
+                    />
+                  </div>
                 </div>
               ) : (
                 <div>
