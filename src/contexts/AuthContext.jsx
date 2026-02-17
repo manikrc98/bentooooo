@@ -11,56 +11,72 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
   const [authError, setAuthError] = useState(null)
 
-  async function fetchProfile(userId) {
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single()
-    setProfile(data)
-  }
+  console.log('[AuthProvider] render — loading:', loading, 'user:', user?.email ?? null, 'profile:', profile?.username ?? null)
 
-  async function handleAuthUser(sessionUser) {
-    if (sessionUser.email !== OWNER_EMAIL) {
-      await supabase.auth.signOut()
-      setUser(null)
+  // Fetch profile in a separate effect, triggered when user changes
+  useEffect(() => {
+    if (!user) {
       setProfile(null)
-      setAuthError('Access denied. Only the portfolio owner can sign in.')
-      return false
+      return
     }
-    setUser(sessionUser)
-    setAuthError(null)
-    await fetchProfile(sessionUser.id)
-    return true
-  }
+
+    let cancelled = false
+
+    async function loadProfile() {
+      console.log('[fetchProfile] fetching profile for userId:', user.id)
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single()
+      console.log('[fetchProfile] result — data:', data, 'error:', error)
+      if (!cancelled) {
+        setProfile(data)
+      }
+    }
+
+    loadProfile()
+
+    return () => { cancelled = true }
+  }, [user])
 
   useEffect(() => {
-    // Check initial session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      try {
-        if (session?.user) {
-          await handleAuthUser(session.user)
-        }
-      } catch (err) {
-        console.error('Session restoration error:', err)
-      } finally {
-        setLoading(false)
-      }
-    })
+    console.log('[AuthProvider] useEffect mount — subscribing to onAuthStateChange')
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      (event, session) => {
+        console.log('[onAuthStateChange] event:', event, 'session:', session ? 'exists' : 'null')
+        console.log('[onAuthStateChange] session user:', session?.user?.email ?? 'none')
+
         if (session?.user) {
-          await handleAuthUser(session.user)
+          if (session.user.email !== OWNER_EMAIL) {
+            console.log('[onAuthStateChange] access denied — signing out')
+            supabase.auth.signOut()
+            setUser(null)
+            setProfile(null)
+            setAuthError('Access denied. Only the portfolio owner can sign in.')
+          } else {
+            console.log('[onAuthStateChange] setting user')
+            setUser(session.user)
+            setAuthError(null)
+          }
         } else {
+          console.log('[onAuthStateChange] no session — clearing user/profile')
           setUser(null)
           setProfile(null)
         }
+
+        console.log('[onAuthStateChange] setting loading=false')
+        setLoading(false)
       }
     )
 
-    return () => subscription.unsubscribe()
+    console.log('[AuthProvider] subscription created')
+
+    return () => {
+      console.log('[AuthProvider] cleanup — unsubscribing')
+      subscription.unsubscribe()
+    }
   }, [])
 
   async function signInWithGoogle() {

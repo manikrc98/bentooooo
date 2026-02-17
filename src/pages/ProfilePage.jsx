@@ -30,7 +30,10 @@ export default function ProfilePage({ defaultUsername }) {
     loadProfile()
   }, [username])
 
+  console.log('[ProfilePage] render — loading:', loading, 'authLoading:', authLoading, 'user:', user?.email ?? null)
+
   if (loading || authLoading) {
+    console.log('[ProfilePage] showing spinner — loading:', loading, 'authLoading:', authLoading)
     return (
       <div className="flex items-center justify-center h-screen bg-gray-50">
         <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />

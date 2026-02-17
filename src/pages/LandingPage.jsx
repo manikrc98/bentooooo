@@ -14,7 +14,10 @@ export default function LandingPage() {
     }
   }, [loading, user, profile, navigate])
 
+  console.log('[LandingPage] render — loading:', loading, 'user:', user?.email ?? null, 'profile:', profile?.username ?? null)
+
   if (loading) {
+    console.log('[LandingPage] showing spinner because loading=true')
     return (
       <div className="flex items-center justify-center h-screen bg-gray-50">
         <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
