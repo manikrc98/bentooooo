@@ -29,7 +29,7 @@ export default function ChatPanel({
   const availableModels = activeProvider ? MODEL_OPTIONS[activeProvider] || [] : []
 
   return (
-    <div className="chat-panel flex flex-col h-full bg-zinc-50">
+    <div className="flex flex-col h-full bg-zinc-50">
       {/* Header */}
       <div className="shrink-0 flex items-center justify-between px-4 py-3 border-b border-zinc-200 bg-white">
         <div className="flex items-center gap-2">

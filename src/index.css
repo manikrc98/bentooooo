@@ -8,9 +8,6 @@
 .bentogrid .bento-filler {
   border-radius: 16px;
   transition: background 0.2s, border 0.2s;
-}
-
-.bentogrid .bento-filler {
   visibility: hidden;
   pointer-events: none;
 }
