@@ -309,16 +309,16 @@ export default function BioSection({ bio, mode, dispatch }) {
                     value={block.heading}
                     onChange={e => updateBlock(block.id, 'heading', e.target.value)}
                   />
-                  <div className="relative border border-zinc-200 rounded">
+                  <div className="relative">
                     {/* Link preview layer — behind textarea */}
-                    <div className="absolute inset-0 text-sm text-zinc-700 leading-relaxed whitespace-pre-line pointer-events-none overflow-hidden p-2"
+                    <div className="absolute inset-0 text-sm text-zinc-700 leading-relaxed whitespace-pre-line pointer-events-none overflow-hidden rounded"
                       dangerouslySetInnerHTML={{ __html: renderBodyAsHtml(block.body, block.links) }}
                     />
                     <textarea
                       ref={el => { if (el) textareaRefs.current[block.id] = el }}
                       className="relative w-full text-sm bg-transparent outline-none resize-none
-                        placeholder:text-zinc-300 leading-relaxed p-2"
-                      style={{ color: 'rgba(0,0,0,0.4)' }}
+                        placeholder:text-zinc-300 leading-relaxed"
+                      style={{ color: 'rgba(0,0,0,0)' }}
                       placeholder="Body text (select text to add links)"
                       rows={3}
                       value={block.body}
