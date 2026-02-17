@@ -37,10 +37,15 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     // Check initial session
     supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (session?.user) {
-        await handleAuthUser(session.user)
+      try {
+        if (session?.user) {
+          await handleAuthUser(session.user)
+        }
+      } catch (err) {
+        console.error('Session restoration error:', err)
+      } finally {
+        setLoading(false)
       }
-      setLoading(false)
     })
 
     // Listen for auth changes
