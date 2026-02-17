@@ -3,6 +3,10 @@ import { Trash2, ImagePlus, Video, Type, Link } from 'lucide-react'
 import { UPDATE_CARD_CONTENT } from '../store/cardStore.js'
 import { compressImage } from '../utils/imageCompression.js'
 
+function TrayDivider() {
+  return <div className="w-px h-8 bg-zinc-200 mx-1" />
+}
+
 export default function FloatingTray({ selectedCard, onRemove, dispatch }) {
   const isVisible = selectedCard !== null
   const imageInputRef = useRef(null)
@@ -60,7 +64,7 @@ export default function FloatingTray({ selectedCard, onRemove, dispatch }) {
       </button>
 
       {/* Divider */}
-      <div className="w-px h-8 bg-zinc-200 mx-1" />
+      <TrayDivider />
 
       {/* Image upload */}
       <button
@@ -104,7 +108,7 @@ export default function FloatingTray({ selectedCard, onRemove, dispatch }) {
       </button>
 
       {/* Divider */}
-      <div className="w-px h-8 bg-zinc-200 mx-1" />
+      <TrayDivider />
 
       {/* Hyperlink input */}
       <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-zinc-50 border border-zinc-200">
