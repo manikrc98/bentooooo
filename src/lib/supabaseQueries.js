@@ -68,6 +68,7 @@ export async function loadProfileByUsername(username) {
             id: b.id,
             heading: b.heading,
             body: b.body,
+            links: b.links || [],
           })),
         }
       : null,
@@ -219,6 +220,7 @@ export async function saveProfile(profileUserId, state) {
         heading: block.heading,
         body: block.body,
         sort_order: i,
+        links: block.links || [],
       }))
       const { error } = await supabase
         .from('bio_blocks')
