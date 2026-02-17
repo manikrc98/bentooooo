@@ -19,7 +19,8 @@ export function useCardSelection(dispatch, mode) {
     function onMouseDown(e) {
       const insideCard = e.target.closest('.bento-card')
       const insideTray = e.target.closest('.floating-tray')
-      if (!insideCard && !insideTray) {
+      const insideChat = e.target.closest('.chat-panel')
+      if (!insideCard && !insideTray && !insideChat) {
         dispatch({ type: DESELECT_CARD })
       }
     }

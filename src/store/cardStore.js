@@ -14,6 +14,7 @@ export const ADD_SECTION = 'ADD_SECTION'
 export const REMOVE_SECTION = 'REMOVE_SECTION'
 export const UPDATE_SECTION_TITLE = 'UPDATE_SECTION_TITLE'
 export const MOVE_CARD_TO_SECTION = 'MOVE_CARD_TO_SECTION'
+export const REORDER_SECTIONS = 'REORDER_SECTIONS'
 export const SET_BIO = 'SET_BIO'
 export const CLEAR_BIO = 'CLEAR_BIO'
 export const RESET_STATE = 'RESET_STATE'
@@ -26,7 +27,7 @@ function nextColor() {
   return COLORS[colorIndex++ % COLORS.length]
 }
 
-function makeCard(bento = '1x1', id, type = 'image') {
+export function makeCard(bento = '1x1', id, type = 'image') {
   return {
     id: id || crypto.randomUUID(),
     bento,
@@ -43,7 +44,7 @@ function makeCard(bento = '1x1', id, type = 'image') {
   }
 }
 
-function makeSection(title = 'Untitled Section') {
+export function makeSection(title = 'Untitled Section') {
   return {
     id: crypto.randomUUID(),
     title,
@@ -227,6 +228,15 @@ export function reducer(state, action) {
         }),
         isDirty: true,
       }
+    }
+
+    case REORDER_SECTIONS: {
+      const { fromIndex, toIndex } = action.payload
+      if (fromIndex === toIndex) return state
+      const next = [...state.sections]
+      const [moved] = next.splice(fromIndex, 1)
+      next.splice(toIndex, 0, moved)
+      return { ...state, sections: next, isDirty: true }
     }
 
     case UPDATE_SECTION_TITLE:

@@ -3,12 +3,15 @@ import { reducer, initialState, REMOVE_CARD, RESET_STATE } from './store/cardSto
 import { useCardSelection } from './hooks/useCardSelection.js'
 import { usePersistence } from './hooks/usePersistence.js'
 import { useUndoRedo } from './hooks/useUndoRedo.js'
+import { useChat } from './hooks/useChat.js'
 import { useAuth } from './contexts/AuthContext.jsx'
 import TopBar from './components/TopBar.jsx'
 import BentoCanvas from './components/BentoCanvas.jsx'
 import FloatingTray from './components/FloatingTray.jsx'
 import BioSection from './components/BioSection.jsx'
 import ResetConfirmModal from './components/ResetConfirmModal.jsx'
+import ChatPanel from './components/chat/ChatPanel.jsx'
+import PortfolioPreview from './components/chat/PortfolioPreview.jsx'
 
 function Toast({ message, visible }) {
   return (
@@ -42,7 +45,7 @@ export default function App({ profileData, isOwner, username, profileUserId }) {
 
   // Keyboard listeners for undo/redo
   useEffect(() => {
-    if (effectiveMode !== 'edit') return
+    if (effectiveMode !== 'edit' && effectiveMode !== 'chat') return
 
     function handleKeyDown(e) {
       const isMeta = e.metaKey || e.ctrlKey
@@ -64,6 +67,7 @@ export default function App({ profileData, isOwner, username, profileUserId }) {
 
   const { handleSelect } = useCardSelection(trackedDispatch, effectiveMode)
   const { save, saving, saveError, clearSaveError } = usePersistence(state, trackedDispatch, profileData, profileUserId)
+  const chat = useChat(state, trackedDispatch, profileUserId)
 
   // Find selected card across all sections
   const selectedCard = selectedCardId
@@ -108,23 +112,47 @@ export default function App({ profileData, isOwner, username, profileUserId }) {
         />
       )}
 
-      <div className="flex-1 flex flex-col lg:flex-row min-h-0 overflow-y-auto px-6 py-6 relative">
-        <BioSection bio={bio} mode={effectiveMode} dispatch={trackedDispatch} />
+      {effectiveMode === 'chat' ? (
+        <div className="flex-1 flex min-h-0">
+          <div className="w-[45%] min-w-[320px] border-r border-zinc-200">
+            <ChatPanel
+              messages={chat.messages}
+              isLoading={chat.isLoading}
+              error={chat.error}
+              onSendMessage={chat.sendMessage}
+              onClearHistory={chat.clearHistory}
+              activeProvider={chat.activeProvider}
+              onSetProvider={chat.setProvider}
+              configuredProviders={chat.configuredProviders}
+              userId={profileUserId}
+              onKeysUpdated={chat.loadKeys}
+            />
+          </div>
+          <div className="flex-1 min-h-0">
+            <PortfolioPreview state={state} dispatch={trackedDispatch} />
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className="flex-1 flex flex-col lg:flex-row min-h-0 overflow-y-auto px-6 py-6 relative">
+            <BioSection bio={bio} mode={effectiveMode} dispatch={trackedDispatch} />
 
-        <BentoCanvas
-          state={{ ...state, mode: effectiveMode }}
-          dispatch={trackedDispatch}
-          selectedCardId={selectedCardId}
-          onCardSelect={handleSelect}
-        />
-      </div>
+            <BentoCanvas
+              state={{ ...state, mode: effectiveMode }}
+              dispatch={trackedDispatch}
+              selectedCardId={selectedCardId}
+              onCardSelect={handleSelect}
+            />
+          </div>
 
-      {isOwner && (
-        <FloatingTray
-          selectedCard={effectiveMode === 'edit' ? selectedCard : null}
-          onRemove={handleRemove}
-          dispatch={trackedDispatch}
-        />
+          {isOwner && (
+            <FloatingTray
+              selectedCard={effectiveMode === 'edit' ? selectedCard : null}
+              onRemove={handleRemove}
+              dispatch={trackedDispatch}
+            />
+          )}
+        </>
       )}
     </div>
   )

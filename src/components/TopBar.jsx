@@ -1,4 +1,4 @@
-import { Save, LayoutGrid, RotateCcw, LogIn, LogOut, X, Loader2 } from 'lucide-react'
+import { Save, LayoutGrid, RotateCcw, LogIn, LogOut, X, Loader2, MessageCircle } from 'lucide-react'
 import { SET_MODE } from '../store/cardStore.js'
 
 export default function TopBar({ mode, isDirty, onSave, saving, saveError, onClearSaveError, onReset, dispatch, isOwner, user, onSignIn, onSignOut, username, authError, onClearAuthError }) {
@@ -63,11 +63,13 @@ export default function TopBar({ mode, isDirty, onSave, saving, saveError, onCle
       <div className="relative flex items-center bg-zinc-100 rounded-xl p-1 gap-0.5">
         {/* Sliding indicator */}
         <div
-          className={`absolute top-1 h-[calc(100%-8px)] w-20 rounded-lg bg-white shadow-sm
-            transition-all duration-200 ease-out
-            ${mode === 'preview' ? 'translate-x-[calc(100%+2px)]' : 'translate-x-0'}
-          `}
-          style={{ left: 4 }}
+          className="absolute top-1 h-[calc(100%-8px)] w-20 rounded-lg bg-white shadow-sm transition-all duration-200 ease-out"
+          style={{
+            left: 4,
+            transform: mode === 'edit' ? 'translateX(0)'
+              : mode === 'chat' ? 'translateX(calc(100% + 2px))'
+              : 'translateX(calc(200% + 4px))',
+          }}
         />
         <button
           className={`relative z-10 w-20 py-1.5 rounded-lg text-xs font-medium text-center transition-colors
@@ -76,6 +78,15 @@ export default function TopBar({ mode, isDirty, onSave, saving, saveError, onCle
           onClick={() => dispatch({ type: SET_MODE, payload: 'edit' })}
         >
           Edit
+        </button>
+        <button
+          className={`relative z-10 w-20 py-1.5 rounded-lg text-xs font-medium text-center transition-colors flex items-center justify-center gap-1
+            ${mode === 'chat' ? 'text-zinc-800' : 'text-zinc-400 hover:text-zinc-600'}
+          `}
+          onClick={() => dispatch({ type: SET_MODE, payload: 'chat' })}
+        >
+          <MessageCircle size={12} />
+          Chat
         </button>
         <button
           className={`relative z-10 w-20 py-1.5 rounded-lg text-xs font-medium text-center transition-colors
