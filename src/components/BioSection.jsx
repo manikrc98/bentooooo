@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import { Plus, Trash2, ImagePlus, X } from 'lucide-react'
 import { SET_BIO, CLEAR_BIO } from '../store/cardStore.js'
 import { compressImage } from '../utils/imageCompression.js'
+import ConfirmModal from './ConfirmModal.jsx'
 
 function makeBioBlock() {
   return {
@@ -221,28 +222,13 @@ export default function BioSection({ bio, mode, dispatch }) {
 
       {/* Delete confirmation modal */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-          <div className="animate-modal-in bg-white rounded-2xl shadow-xl p-6 max-w-sm w-full mx-4">
-            <h3 className="text-base font-semibold text-zinc-800 mb-2">Delete bio section?</h3>
-            <p className="text-sm text-zinc-500 mb-5">
-              This will permanently remove your bio, avatar, and all content blocks. This action cannot be undone.
-            </p>
-            <div className="flex gap-2 justify-end">
-              <button
-                onClick={() => setShowDeleteConfirm(false)}
-                className="px-4 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-100 rounded-xl transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={confirmDelete}
-                className="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-xl transition-colors"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
+        <ConfirmModal
+          title="Delete bio section?"
+          message="This will permanently remove your bio, avatar, and all content blocks. This action cannot be undone."
+          confirmLabel="Delete"
+          onConfirm={confirmDelete}
+          onCancel={() => setShowDeleteConfirm(false)}
+        />
       )}
     </>
   )
