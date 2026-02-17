@@ -1,49 +1,54 @@
 import { Save, LayoutGrid, RotateCcw, LogIn, LogOut, X, Loader2, MessageCircle } from 'lucide-react'
 import { SET_MODE } from '../store/cardStore.js'
 
+function AuthButtons({ user, onSignIn, onSignOut, authError, onClearAuthError, variant = 'owner' }) {
+  const btnClass = variant === 'visitor'
+    ? 'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all bg-white/80 backdrop-blur-md border border-zinc-200 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-600 shadow-sm'
+    : 'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all bg-zinc-100 text-zinc-500 hover:bg-zinc-200 hover:text-zinc-600'
+
+  return (
+    <>
+      {user ? (
+        <button onClick={onSignOut} className={btnClass} title="Sign out">
+          {user.user_metadata?.avatar_url ? (
+            <img src={user.user_metadata.avatar_url} alt="" className="w-5 h-5 rounded-full" />
+          ) : (
+            <LogOut size={13} />
+          )}
+          Sign out
+        </button>
+      ) : (
+        <button onClick={onSignIn} className={btnClass} title="Sign in">
+          <LogIn size={13} />
+          Sign in
+        </button>
+      )}
+
+      {authError && (
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs font-medium">
+          <span>{authError}</span>
+          <button onClick={onClearAuthError} className="hover:text-red-800 transition-colors">
+            <X size={13} />
+          </button>
+        </div>
+      )}
+    </>
+  )
+}
+
 export default function TopBar({ mode, isDirty, onSave, saving, saveError, onClearSaveError, onReset, dispatch, isOwner, user, onSignIn, onSignOut, username, authError, onClearAuthError }) {
   // Read-only users: just show a floating sign-in button, no branded header
   if (!isOwner) {
     return (
       <div className="absolute top-4 right-4 z-50 flex items-center gap-2">
-        {user ? (
-          <button
-            onClick={onSignOut}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all
-              bg-white/80 backdrop-blur-md border border-zinc-200 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-600 shadow-sm"
-            title="Sign out"
-          >
-            {user.user_metadata?.avatar_url ? (
-              <img
-                src={user.user_metadata.avatar_url}
-                alt=""
-                className="w-5 h-5 rounded-full"
-              />
-            ) : (
-              <LogOut size={13} />
-            )}
-            Sign out
-          </button>
-        ) : (
-          <button
-            onClick={onSignIn}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all
-              bg-white/80 backdrop-blur-md border border-zinc-200 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-600 shadow-sm"
-            title="Sign in"
-          >
-            <LogIn size={13} />
-            Sign in
-          </button>
-        )}
-
-        {authError && (
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs font-medium">
-            <span>{authError}</span>
-            <button onClick={onClearAuthError} className="hover:text-red-800 transition-colors">
-              <X size={13} />
-            </button>
-          </div>
-        )}
+        <AuthButtons
+          user={user}
+          onSignIn={onSignIn}
+          onSignOut={onSignOut}
+          authError={authError}
+          onClearAuthError={onClearAuthError}
+          variant="visitor"
+        />
       </div>
     )
   }
@@ -141,44 +146,14 @@ export default function TopBar({ mode, isDirty, onSave, saving, saveError, onCle
         )}
 
         {/* Auth buttons */}
-        {user ? (
-          <button
-            onClick={onSignOut}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all
-              bg-zinc-100 text-zinc-500 hover:bg-zinc-200 hover:text-zinc-600"
-            title="Sign out"
-          >
-            {user.user_metadata?.avatar_url ? (
-              <img
-                src={user.user_metadata.avatar_url}
-                alt=""
-                className="w-5 h-5 rounded-full"
-              />
-            ) : (
-              <LogOut size={13} />
-            )}
-            Sign out
-          </button>
-        ) : (
-          <button
-            onClick={onSignIn}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all
-              bg-zinc-100 text-zinc-500 hover:bg-zinc-200 hover:text-zinc-600"
-            title="Sign in"
-          >
-            <LogIn size={13} />
-            Sign in
-          </button>
-        )}
-
-        {authError && (
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs font-medium">
-            <span>{authError}</span>
-            <button onClick={onClearAuthError} className="hover:text-red-800 transition-colors">
-              <X size={13} />
-            </button>
-          </div>
-        )}
+        <AuthButtons
+          user={user}
+          onSignIn={onSignIn}
+          onSignOut={onSignOut}
+          authError={authError}
+          onClearAuthError={onClearAuthError}
+          variant="owner"
+        />
       </div>
     </header>
   )
