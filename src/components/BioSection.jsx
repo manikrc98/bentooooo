@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react'
-import { Plus, Trash2, ImagePlus, X } from 'lucide-react'
+import { useState, useRef, useEffect, useCallback } from 'react'
+import { Plus, Trash2, ImagePlus, X, Link as LinkIcon } from 'lucide-react'
 import { SET_BIO, CLEAR_BIO } from '../store/cardStore.js'
 import { compressImage } from '../utils/imageCompression.js'
 
@@ -20,16 +20,139 @@ function makeBio() {
   }
 }
 
+/* Parse body text with markdown-style links [text](url) into React elements */
+function renderBodyWithLinks(body) {
+  const parts = []
+  const regex = /\[([^\]]+)\]\(([^)]+)\)/g
+  let lastIndex = 0
+  let match
+
+  while ((match = regex.exec(body)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(body.slice(lastIndex, match.index))
+    }
+    parts.push(
+      <a
+        key={match.index}
+        href={match[2]}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-500 underline underline-offset-2 hover:text-blue-600 transition-colors"
+      >
+        {match[1]}
+      </a>
+    )
+    lastIndex = match.index + match[0].length
+  }
+
+  if (lastIndex < body.length) {
+    parts.push(body.slice(lastIndex))
+  }
+
+  return parts.length > 0 ? parts : body
+}
+
+/* Floating link tray that appears at bottom of textarea */
+function LinkTray({ onSubmit, onDismiss }) {
+  const inputRef = useRef(null)
+
+  useEffect(() => {
+    inputRef.current?.focus()
+  }, [])
+
+  useEffect(() => {
+    function handleEsc(e) {
+      if (e.key === 'Escape') onDismiss()
+    }
+    window.addEventListener('keydown', handleEsc)
+    return () => window.removeEventListener('keydown', handleEsc)
+  }, [onDismiss])
+
+  function handleSubmit(e) {
+    e.preventDefault()
+    const url = inputRef.current?.value.trim()
+    if (url) onSubmit(url)
+  }
+
+  return (
+    <div className="absolute bottom-1 left-0 right-0 z-20 flex justify-center">
+      <form
+        onSubmit={handleSubmit}
+        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white border border-zinc-200 shadow-lg"
+        onClick={e => e.stopPropagation()}
+      >
+        <LinkIcon size={13} className="text-zinc-400 shrink-0" />
+        <input
+          ref={inputRef}
+          type="url"
+          className="text-xs text-zinc-600 bg-transparent outline-none w-40 placeholder:text-zinc-300"
+          placeholder="https://…"
+          onBlur={(e) => {
+            // Dismiss if blurred without submitting (small delay to allow submit click)
+            setTimeout(() => {
+              if (!e.currentTarget?.closest('form')?.contains(document.activeElement)) {
+                onDismiss()
+              }
+            }, 150)
+          }}
+        />
+        <button
+          type="submit"
+          className="text-[10px] font-medium text-blue-500 hover:text-blue-600 px-1.5 py-0.5 rounded bg-blue-50 hover:bg-blue-100 transition-colors"
+        >
+          Add
+        </button>
+      </form>
+    </div>
+  )
+}
+
 export default function BioSection({ bio, mode, dispatch }) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [linkEditState, setLinkEditState] = useState(null) // { blockId, selStart, selEnd, selectedText }
   const avatarInputRef = useRef(null)
+  const bodyRefs = useRef({}) // blockId -> textarea ref
 
   const isEditMode = mode === 'edit'
+
+  // Register a body textarea ref
+  const setBodyRef = useCallback((blockId, el) => {
+    if (el) bodyRefs.current[blockId] = el
+    else delete bodyRefs.current[blockId]
+  }, [])
+
+  // Handle Cmd+K on body textareas
+  useEffect(() => {
+    if (!isEditMode) return
+
+    function handleKeyDown(e) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        // Check if focus is on one of our body textareas
+        const active = document.activeElement
+        const blockId = Object.keys(bodyRefs.current).find(
+          id => bodyRefs.current[id] === active
+        )
+        if (!blockId) return
+
+        e.preventDefault()
+        const ta = active
+        const selStart = ta.selectionStart
+        const selEnd = ta.selectionEnd
+        if (selStart === selEnd) return // No text selected
+
+        const selectedText = ta.value.slice(selStart, selEnd)
+        setLinkEditState({ blockId, selStart, selEnd, selectedText })
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isEditMode])
 
   // No bio and not in edit mode — nothing to show
   if (!bio && !isEditMode) return null
 
-  // No bio yet — show the "Add bio" CTA in edit mode (absolutely positioned, doesn't shift layout)
+  // No bio yet — show the "Add bio" CTA in edit mode
   if (!bio) {
     return (
       <div className="relative lg:absolute lg:left-6 lg:top-6 lg:bottom-6 flex items-stretch mb-4 lg:mb-0" style={{ width: '48px', zIndex: 10 }}>
@@ -83,6 +206,21 @@ export default function BioSection({ bio, mode, dispatch }) {
       type: SET_BIO,
       payload: { blocks: bio.blocks.filter(b => b.id !== blockId) },
     })
+  }
+
+  function handleLinkSubmit(url) {
+    if (!linkEditState) return
+    const { blockId, selStart, selEnd, selectedText } = linkEditState
+    const block = bio.blocks.find(b => b.id === blockId)
+    if (!block) return
+
+    const before = block.body.slice(0, selStart)
+    const after = block.body.slice(selEnd)
+    const linked = `[${selectedText}](${url})`
+    const newBody = before + linked + after
+
+    updateBlock(blockId, 'body', newBody)
+    setLinkEditState(null)
   }
 
   function confirmDelete() {
@@ -174,7 +312,7 @@ export default function BioSection({ bio, mode, dispatch }) {
                 </button>
               )}
               {isEditMode ? (
-                <div className="space-y-1">
+                <div className="space-y-1 relative">
                   <input
                     className="w-full text-xs font-semibold text-zinc-400 bg-transparent outline-none
                       placeholder:text-zinc-300 uppercase tracking-wide"
@@ -182,14 +320,23 @@ export default function BioSection({ bio, mode, dispatch }) {
                     value={block.heading}
                     onChange={e => updateBlock(block.id, 'heading', e.target.value)}
                   />
-                  <textarea
-                    className="w-full text-sm text-zinc-700 bg-transparent outline-none resize-none
-                      placeholder:text-zinc-300 leading-relaxed"
-                    placeholder="Body text"
-                    rows={3}
-                    value={block.body}
-                    onChange={e => updateBlock(block.id, 'body', e.target.value)}
-                  />
+                  <div className="relative">
+                    <textarea
+                      ref={el => setBodyRef(block.id, el)}
+                      className="w-full text-sm text-zinc-700 bg-transparent outline-none resize-none
+                        placeholder:text-zinc-300 leading-relaxed"
+                      placeholder="Body text"
+                      rows={3}
+                      value={block.body}
+                      onChange={e => updateBlock(block.id, 'body', e.target.value)}
+                    />
+                    {linkEditState && linkEditState.blockId === block.id && (
+                      <LinkTray
+                        onSubmit={handleLinkSubmit}
+                        onDismiss={() => setLinkEditState(null)}
+                      />
+                    )}
+                  </div>
                 </div>
               ) : (
                 <div>
@@ -197,7 +344,9 @@ export default function BioSection({ bio, mode, dispatch }) {
                     <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wide mb-2">{block.heading}</h3>
                   )}
                   {block.body && (
-                    <p className="text-sm text-zinc-700 leading-relaxed whitespace-pre-line">{block.body}</p>
+                    <p className="text-sm text-zinc-700 leading-relaxed whitespace-pre-line">
+                      {renderBodyWithLinks(block.body)}
+                    </p>
                   )}
                 </div>
               )}

@@ -246,7 +246,7 @@ export default function BentoCard({
   const cardRef = useRef(null)
 
   useEffect(() => {
-    if (!isEditMode || type !== 'text') return
+    if (!isEditMode) return
     const down = (e) => { if (e.key === 'Shift') setShiftHeld(true) }
     const up = (e) => { if (e.key === 'Shift') setShiftHeld(false) }
     window.addEventListener('keydown', down)
@@ -319,11 +319,6 @@ export default function BentoCard({
         </>
       )}
 
-      {/* Dark gradient overlay only when media is present */}
-      {hasMedia && (
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
-      )}
-
       {/* Drop zone indicator when this card is the target */}
       {isDropTarget && !isDragging && (
         <div
@@ -383,7 +378,7 @@ export default function BentoCard({
           </div>
 
           {/* Resize grid overlay on hover — for text cards only when Shift is held */}
-          {isHovered && (type !== 'text' || shiftHeld) && (
+          {isHovered && shiftHeld && (
             <ResizeGrid
               currentBento={clampBento(bento, maxColumns)}
               maxColumns={maxColumns}
@@ -395,7 +390,7 @@ export default function BentoCard({
       )}
 
       {/* Hint for text cards: hold shift to resize — outside overlay so it doesn't interfere */}
-      {isEditMode && isHovered && type === 'text' && !shiftHeld && (
+      {isEditMode && isHovered && !shiftHeld && (
         <span className="absolute bottom-1.5 left-1/2 -translate-x-1/2 text-[10px] text-black/30 select-none pointer-events-none z-30">
           Hold Shift to resize
         </span>

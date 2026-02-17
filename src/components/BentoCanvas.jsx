@@ -38,7 +38,7 @@ export default function BentoCanvas({ state, dispatch, selectedCardId, onCardSel
           <p>No sections yet. Switch to Edit mode to get started.</p>
         </div>
       ) : (
-        <div className="w-full max-w-4xl mx-auto space-y-6">
+        <div className="w-full max-w-4xl mx-auto space-y-6 pb-16">
           {sections.map(section => (
             <div key={section.id}>
               <SectionHeader

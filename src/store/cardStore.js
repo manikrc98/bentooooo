@@ -17,6 +17,7 @@ export const MOVE_CARD_TO_SECTION = 'MOVE_CARD_TO_SECTION'
 export const SET_BIO = 'SET_BIO'
 export const CLEAR_BIO = 'CLEAR_BIO'
 export const RESET_STATE = 'RESET_STATE'
+export const RESTORE_SNAPSHOT = 'RESTORE_SNAPSHOT'
 
 // ── Default card content ─────────────────────────────────────────────────────
 const COLORS = ['#fde2e4', '#d3e4cd', '#dde1f8', '#fce8c3', '#c9e8f5', '#f5e6d3']
@@ -257,6 +258,14 @@ export function reducer(state, action) {
         sections: [],
         bio: null,
         selectedCardId: null,
+        isDirty: true,
+      }
+
+    case RESTORE_SNAPSHOT:
+      return {
+        ...state,
+        sections: action.payload.sections,
+        bio: action.payload.bio ?? null,
         isDirty: true,
       }
 
