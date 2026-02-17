@@ -41,12 +41,7 @@ export default function BioSection({ bio, mode, dispatch }) {
             hover:border-zinc-300 hover:text-zinc-500 hover:bg-zinc-50/50 transition-colors"
         >
           <span
-            className="flex items-center gap-2 whitespace-nowrap"
-            style={{
-              writingMode: 'vertical-rl',
-              textOrientation: 'mixed',
-              transform: 'rotate(180deg)',
-            }}
+            className="flex items-center gap-2 whitespace-nowrap vertical-text-rtl"
           >
             <Plus size={14} />
             Add bio
