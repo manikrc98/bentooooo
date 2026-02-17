@@ -110,14 +110,7 @@ function AutoScaleText({ text, cardRef, textColor }) {
     <>
       <div
         ref={measureRef}
-        className="font-semibold leading-tight whitespace-pre-wrap"
-        style={{
-          position: 'fixed',
-          top: -9999,
-          left: -9999,
-          visibility: 'hidden',
-          pointerEvents: 'none',
-        }}
+        className="offscreen-measure font-semibold leading-tight whitespace-pre-wrap"
       />
       <div
         className="absolute inset-0 flex items-center justify-center p-6 font-semibold leading-tight overflow-hidden whitespace-pre-wrap text-center"
@@ -202,14 +195,7 @@ function AutoScaleTextarea({ text, cardRef, textColor, onChange }) {
     <>
       <div
         ref={measureRef}
-        className="font-semibold leading-tight whitespace-pre-wrap"
-        style={{
-          position: 'fixed',
-          top: -9999,
-          left: -9999,
-          visibility: 'hidden',
-          pointerEvents: 'none',
-        }}
+        className="offscreen-measure font-semibold leading-tight whitespace-pre-wrap"
       />
       <div className="absolute inset-0 flex items-center justify-center p-6">
         <textarea
