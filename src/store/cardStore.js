@@ -40,6 +40,10 @@ export function makeCard(bento = '1x1', id, type = 'image') {
       bgColor: nextColor(),
       textColor: '#374151',
       linkUrl: '',
+      manualFontSize: null,   // null = auto-scale, number = locked px
+      mediaScale: 1,          // zoom multiplier for image/video (1 = cover)
+      mediaOffsetX: 0,        // horizontal pan offset in px from center
+      mediaOffsetY: 0,        // vertical pan offset in px from center
     },
   }
 }

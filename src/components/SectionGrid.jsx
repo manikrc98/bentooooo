@@ -3,7 +3,7 @@ import { useBentoGrid } from '../hooks/useBentoGrid.js'
 import { ADD_CARD, REORDER_CARDS, MOVE_CARD_TO_SECTION } from '../store/cardStore.js'
 import BentoCard from './BentoCard.jsx'
 
-export default function SectionGrid({ section, state, dispatch, selectedCardId, onCardSelect }) {
+export default function SectionGrid({ section, state, dispatch, selectedCardId, onCardSelect, adjustingCardId, onAdjustCancel }) {
   const { mode, gridConfig } = state
   const { cards } = section
   const containerRef = useRef(null)
@@ -240,6 +240,8 @@ export default function SectionGrid({ section, state, dispatch, selectedCardId, 
           onDragStart={handleDragStart}
           isDragging={dragIndex === index}
           isDropTarget={dropTargetIndex === index && dragIndex !== null}
+          isAdjusting={adjustingCardId === card.id}
+          onAdjustCancel={onAdjustCancel}
         />
       ))}
     </div>

@@ -29,7 +29,7 @@ function SectionDivider({ index, hovered, onHover, onClick, interactive = true }
   )
 }
 
-export default function BentoCanvas({ state, dispatch, selectedCardId, onCardSelect }) {
+export default function BentoCanvas({ state, dispatch, selectedCardId, onCardSelect, adjustingCardId, onAdjustCancel }) {
   const { sections, mode } = state
   const [deletingSectionId, setDeletingSectionId] = useState(null)
   const [hoveredDivider, setHoveredDivider] = useState(null)
@@ -206,6 +206,8 @@ export default function BentoCanvas({ state, dispatch, selectedCardId, onCardSel
                   dispatch={dispatch}
                   selectedCardId={selectedCardId}
                   onCardSelect={onCardSelect}
+                  adjustingCardId={adjustingCardId}
+                  onAdjustCancel={onAdjustCancel}
                 />
               </div>
 

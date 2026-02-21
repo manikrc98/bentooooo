@@ -30,6 +30,7 @@ export default function App({ profileData, isOwner, username, profileUserId }) {
   const { mode, sections, selectedCardId, isDirty, bio } = state
   const [showResetModal, setShowResetModal] = useState(false)
   const [toast, setToast] = useState({ message: '', visible: false })
+  const [adjustingCardId, setAdjustingCardId] = useState(null)
 
   const { user, signInWithGoogle, signOut, authError, clearAuthError } = useAuth()
 
@@ -142,6 +143,8 @@ export default function App({ profileData, isOwner, username, profileUserId }) {
               dispatch={trackedDispatch}
               selectedCardId={selectedCardId}
               onCardSelect={handleSelect}
+              adjustingCardId={adjustingCardId}
+              onAdjustCancel={() => setAdjustingCardId(null)}
             />
           </div>
 
@@ -150,6 +153,8 @@ export default function App({ profileData, isOwner, username, profileUserId }) {
               selectedCard={effectiveMode === 'edit' ? selectedCard : null}
               onRemove={handleRemove}
               dispatch={trackedDispatch}
+              onStartAdjust={() => selectedCardId && setAdjustingCardId(selectedCardId)}
+              isAdjusting={adjustingCardId !== null && adjustingCardId === selectedCardId}
             />
           )}
         </>
