@@ -404,7 +404,7 @@ export default function BioSection({ bio, mode, dispatch }) {
         <div className="mt-4">
           {isEditMode ? (
             <input
-              className="w-full text-2xl font-bold text-zinc-800 bg-transparent outline-none
+              className="block w-full text-2xl font-bold text-zinc-800 bg-transparent outline-none
                 placeholder:text-zinc-300"
               placeholder="Your name"
               value={bio.name}
@@ -420,7 +420,7 @@ export default function BioSection({ bio, mode, dispatch }) {
           {isEditMode ? (
             <textarea
               ref={descriptionRef}
-              className="w-full text-sm text-zinc-500 bg-transparent outline-none resize-none
+              className="block w-full text-sm text-zinc-500 bg-transparent outline-none resize-none
                 placeholder:text-zinc-300 leading-relaxed"
               style={{ overflow: 'hidden' }}
               placeholder="Short description"
@@ -450,9 +450,9 @@ export default function BioSection({ bio, mode, dispatch }) {
                 </button>
               )}
               {isEditMode ? (
-                <div className="space-y-1">
+                <div className="space-y-2">
                   <input
-                    className="w-full text-xs font-semibold text-zinc-400 bg-transparent outline-none
+                    className="block w-full text-xs font-semibold text-zinc-400 bg-transparent outline-none
                       placeholder:text-zinc-300 uppercase tracking-wide"
                     placeholder="Heading"
                     value={block.heading}
@@ -465,7 +465,7 @@ export default function BioSection({ bio, mode, dispatch }) {
                     />
                     <textarea
                       ref={el => { if (el) textareaRefs.current[block.id] = el }}
-                      className="relative w-full text-sm bg-transparent outline-none resize-none
+                      className="block relative w-full text-sm bg-transparent outline-none resize-none
                         placeholder:text-zinc-300 leading-relaxed"
                       style={{ color: 'rgba(0,0,0,0)', caretColor: 'black', overflow: 'hidden' }}
                       placeholder="Body text (select text to add links)"
