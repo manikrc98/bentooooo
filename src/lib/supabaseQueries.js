@@ -48,6 +48,9 @@ export async function loadProfileByUsername(username) {
         bgColor: card.bg_color,
         textColor: card.text_color,
         linkUrl: card.link_url,
+        mediaScale: card.media_scale ?? 1,
+        mediaOffsetX: card.media_offset_x ?? 0,
+        mediaOffsetY: card.media_offset_y ?? 0,
       },
     })
   }
@@ -162,6 +165,9 @@ export async function saveProfile(profileUserId, state) {
       bg_color: card.content.bgColor,
       text_color: card.content.textColor,
       link_url: card.content.linkUrl,
+      media_scale: card.content.mediaScale ?? 1,
+      media_offset_x: card.content.mediaOffsetX ?? 0,
+      media_offset_y: card.content.mediaOffsetY ?? 0,
       updated_at: new Date().toISOString(),
     }))
   )

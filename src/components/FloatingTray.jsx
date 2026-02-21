@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { Trash2, ImagePlus, Video, Type, Link } from 'lucide-react'
+import { Trash2, ImagePlus, Video, Type, Link, Crop } from 'lucide-react'
 import { UPDATE_CARD_CONTENT } from '../store/cardStore.js'
 import { compressImage } from '../utils/imageCompression.js'
 
@@ -7,7 +7,7 @@ function TrayDivider() {
   return <div className="w-px h-8 bg-zinc-200 mx-1" />
 }
 
-export default function FloatingTray({ selectedCard, onRemove, dispatch }) {
+export default function FloatingTray({ selectedCard, onRemove, dispatch, onStartAdjust, isAdjusting }) {
   const isVisible = selectedCard !== null
   const imageInputRef = useRef(null)
   const videoInputRef = useRef(null)
@@ -97,6 +97,17 @@ export default function FloatingTray({ selectedCard, onRemove, dispatch }) {
         className="hidden"
         onChange={handleVideoUpload}
       />
+
+      {/* Adjust media position/scale — only for image and video cards */}
+      {(contentType === 'image' || contentType === 'video') && (
+        <button
+          className={`${btnBase} ${isAdjusting ? btnActive : btnDefault}`}
+          title="Adjust media position & scale"
+          onClick={() => onStartAdjust?.()}
+        >
+          <Crop size={16} />
+        </button>
+      )}
 
       {/* Text mode */}
       <button
