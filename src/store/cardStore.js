@@ -186,6 +186,12 @@ export function reducer(state, action) {
 
     case ADD_SECTION: {
       const newSection = makeSection(action.payload?.title || 'Untitled Section')
+      const insertIndex = action.payload?.insertIndex
+      if (insertIndex != null) {
+        const next = [...state.sections]
+        next.splice(insertIndex, 0, newSection)
+        return { ...state, sections: next, isDirty: true }
+      }
       return {
         ...state,
         sections: [...state.sections, newSection],

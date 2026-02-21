@@ -1,9 +1,21 @@
-import { Trash2 } from 'lucide-react'
+import { Trash2, GripVertical } from 'lucide-react'
 import { UPDATE_SECTION_TITLE } from '../store/cardStore.js'
 
-export default function SectionHeader({ section, isEditMode, dispatch, onDeleteRequest }) {
+export default function SectionHeader({ section, isEditMode, dispatch, onDeleteRequest, onDragStart }) {
   return (
-    <div className="flex items-center gap-2 mb-2 group/section">
+    <div className="relative flex items-center gap-1 mb-2 group/section">
+      {isEditMode && (
+        <div
+          className="absolute -left-6 top-1/2 -translate-y-1/2 p-1 text-zinc-300 hover:text-zinc-500
+            cursor-grab active:cursor-grabbing opacity-0 group-hover/section:opacity-100
+            transition-opacity touch-none select-none"
+          onPointerDown={onDragStart}
+          title="Drag to reorder"
+        >
+          <GripVertical size={16} />
+        </div>
+      )}
+
       {isEditMode ? (
         <input
           className="text-lg font-semibold bg-transparent outline-none border-b-2 border-transparent
