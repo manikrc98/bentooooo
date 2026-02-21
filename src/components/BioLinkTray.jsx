@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
-import { Link, X } from 'lucide-react'
+import { Trash2 } from 'lucide-react'
 
-export default function BioLinkTray({ position, selectedText, existingUrl, onApplyLink, onRemoveLink, onClose }) {
+export default function BioLinkTray({ position, existingUrl, activeFormats, onToggleFormat, onApplyLink, onRemoveLink, onClose }) {
   const [url, setUrl] = useState(existingUrl || '')
   const inputRef = useRef(null)
 
@@ -15,10 +15,6 @@ export default function BioLinkTray({ position, selectedText, existingUrl, onApp
     }
   }
 
-  function handleRemove() {
-    onRemoveLink()
-  }
-
   function handleKeyDown(e) {
     if (e.key === 'Enter') {
       handleApply()
@@ -27,27 +23,46 @@ export default function BioLinkTray({ position, selectedText, existingUrl, onApp
     }
   }
 
-  if (!position || !selectedText) return null
+  if (!position) return null
 
   const { x, y } = position
+
+  const formats = [
+    { type: 'bold', label: <strong>B</strong> },
+    { type: 'italic', label: <em>I</em> },
+    { type: 'strikethrough', label: <s>S</s> },
+  ]
 
   return (
     <div
       className="bio-link-tray fixed z-50 bg-white/95 backdrop-blur-md border border-zinc-200 rounded-xl shadow-lg px-3 py-2.5 flex flex-col gap-2"
       style={{
         left: `${x}px`,
-        top: `${Math.max(10, y - 50)}px`,
-        maxWidth: '350px',
+        top: `${y}px`,
+        transform: 'translate(-50%, -100%)',
+        maxWidth: '320px',
       }}
     >
-      {/* Selected text indicator */}
-      <div className="flex items-center gap-2 text-xs">
-        <Link size={12} className="text-zinc-400 shrink-0" />
-        <span className="text-zinc-500">Link:</span>
-        <span className="font-medium text-zinc-700 truncate max-w-[200px]" title={selectedText}>
-          "{selectedText}"
-        </span>
+      {/* Formatting buttons */}
+      <div className="flex items-center gap-1">
+        {formats.map(({ type, label }) => (
+          <button
+            key={type}
+            onClick={() => onToggleFormat(type)}
+            className={`w-7 h-7 rounded-lg text-sm flex items-center justify-center transition-all active:scale-95
+              ${activeFormats?.[type]
+                ? 'bg-zinc-800 text-white'
+                : 'text-zinc-600 hover:bg-zinc-100'
+              }`}
+            title={type.charAt(0).toUpperCase() + type.slice(1)}
+          >
+            {label}
+          </button>
+        ))}
       </div>
+
+      {/* Divider */}
+      <div className="h-px bg-zinc-100" />
 
       {/* URL input and buttons */}
       <div className="flex items-center gap-2">
@@ -73,22 +88,13 @@ export default function BioLinkTray({ position, selectedText, existingUrl, onApp
         {/* Remove button (only show if there's an existing URL) */}
         {existingUrl && (
           <button
-            onClick={handleRemove}
+            onClick={() => onRemoveLink()}
             className="p-1 rounded-lg text-red-400 hover:bg-red-50 active:scale-95 transition-all"
             title="Remove link"
           >
-            <X size={14} />
+            <Trash2 size={14} />
           </button>
         )}
-
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          className="p-1 rounded-lg text-zinc-400 hover:bg-zinc-100 active:scale-95 transition-all"
-          title="Close"
-        >
-          <X size={14} />
-        </button>
       </div>
     </div>
   )
