@@ -50,11 +50,12 @@ function ResizeGrid({ currentBento, maxColumns, onResize }) {
 }
 
 /* ── Auto-scaling text component (preview mode) ─────────────────── */
-function AutoScaleText({ text, cardRef, textColor }) {
+function AutoScaleText({ text, cardRef, textColor, manualFontSize }) {
   const measureRef = useRef(null)
-  const [fontSize, setFontSize] = useState(120)
+  const [fontSize, setFontSize] = useState(manualFontSize ?? 120)
 
   const recalc = useCallback(() => {
+    if (manualFontSize != null) { setFontSize(manualFontSize); return }
     if (!cardRef.current || !measureRef.current || !text) return
     const card = cardRef.current
     const pad = 24
@@ -93,7 +94,7 @@ function AutoScaleText({ text, cardRef, textColor }) {
       }
     }
     setFontSize(best)
-  }, [text, cardRef])
+  }, [text, cardRef, manualFontSize])
 
   useEffect(() => { recalc() }, [recalc])
 
@@ -451,7 +452,7 @@ export default function BentoCard({
               }}
             />
           ) : (
-            <AutoScaleText text={text} cardRef={cardRef} textColor={textColor} />
+            <AutoScaleText text={text} cardRef={cardRef} textColor={textColor} manualFontSize={manualFontSize} />
           )}
         </>
       )}
